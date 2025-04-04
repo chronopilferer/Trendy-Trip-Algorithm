@@ -1,0 +1,177 @@
+{
+    "places": [
+    {
+        "id": 7,
+        "name": "호텔 난타",
+        "x_cord": 126.532199,
+        "y_cord": 33.500633,
+        "category": "accommodation",
+        "open_time": "07:00",
+        "close_time": "12:00",
+        "service_time": 30,
+        "tags": ["숙소", "체크아웃"],
+        "휴무일": [],
+        "break_time": []
+        },
+      {
+        "id": 1,
+        "name": "한라산 국립공원",
+        "x_cord": 126.533000,
+        "y_cord": 33.361000,
+        "category": "landmark",
+        "open_time": "08:00",
+        "close_time": "17:00",
+        "service_time": 120,
+        "tags": ["자연", "등산"],
+        "휴무일": [],
+        "break_time": []
+      },
+      {
+        "id": 2,
+        "name": "용머리해안",
+        "x_cord": 126.752000,
+        "y_cord": 33.218000,
+        "category": "landmark",
+        "open_time": "09:00",
+        "close_time": "18:00",
+        "service_time": 60,
+        "tags": ["자연", "해변"],
+        "휴무일": [],
+        "break_time": []
+      },
+      {
+        "id": 3,
+        "name": "천지연 폭포",
+        "x_cord": 126.558000,
+        "y_cord": 33.249000,
+        "category": "landmark",
+        "open_time": "09:00",
+        "close_time": "19:00",
+        "service_time": 60,
+        "tags": ["자연", "폭포"],
+        "휴무일": [],
+        "break_time": []
+      },
+      {
+        "id": 4,
+        "name": "중문 관광단지",
+        "x_cord": 126.414000,
+        "y_cord": 33.248000,
+        "category": "landmark",
+        "open_time": "10:00",
+        "close_time": "18:00",
+        "service_time": 90,
+        "tags": ["쇼핑", "관광"],
+        "휴무일": [],
+        "break_time": []
+      },
+      {
+        "id": 5,
+        "name": "제주 동문시장",
+        "x_cord": 126.531000,
+        "y_cord": 33.513000,
+        "category": "landmark",
+        "open_time": "08:00",
+        "close_time": "21:00",
+        "service_time": 60,
+        "tags": ["시장", "쇼핑"],
+        "휴무일": [],
+        "break_time": []
+      },
+      {
+        "id": 6,
+        "name": "브런치 카페",
+        "x_cord": 126.528000,
+        "y_cord": 33.510000,
+        "category": "restaurant",
+        "open_time": "09:00",
+        "close_time": "11:00",
+        "service_time": 60,
+        "tags": ["식당", "브런치"],
+        "휴무일": [],
+        "break_time": []
+      },
+      {
+        "id": 7,
+        "name": "중식당",
+        "x_cord": 126.541000,
+        "y_cord": 33.370000,
+        "category": "restaurant",
+        "open_time": "11:00",
+        "close_time": "14:00",
+        "service_time": 60,
+        "tags": ["식당", "중식"],
+        "휴무일": [],
+        "break_time": []
+      },
+      {
+        "id": 8,
+        "name": "석식당",
+        "x_cord": 126.500000,
+        "y_cord": 33.510000,
+        "category": "restaurant",
+        "open_time": "17:30",
+        "close_time": "20:00",
+        "service_time": 60,
+        "tags": ["식당", "석식"],
+        "휴무일": [],
+        "break_time": []
+      },
+      {
+        "id": 9,
+        "name": "카페 산방산",
+        "x_cord": 126.755000,
+        "y_cord": 33.237000,
+        "category": "cafe",
+        "open_time": "10:00",
+        "close_time": "20:00",
+        "service_time": 45,
+        "tags": ["카페", "뷰맛집"],
+        "휴무일": [],
+        "break_time": []
+      },
+      {
+        "id": 10,
+        "name": "제주 해녀박물관",
+        "x_cord": 126.906000,
+        "y_cord": 33.531000,
+        "category": "landmark",
+        "open_time": "09:00",
+        "close_time": "17:00",
+        "service_time": 60,
+        "tags": ["박물관", "전통"],
+        "휴무일": [],
+        "break_time": []
+      },
+      {
+        "id": 7,
+        "name": "호텔 난타",
+        "x_cord": 126.532199,
+        "y_cord": 33.500633,
+        "category": "accommodation",
+        "open_time": "07:00",
+        "close_time": "23:00",
+        "service_time": 30,
+        "tags": ["숙소", "체크아웃"],
+        "휴무일": [],
+        "break_time": []
+        }
+    ],
+    "user": {
+      "start_time": "08:00",
+      "end_time": "20:00",
+      "travel_style": "relaxed",
+      "meal_time_preferences": {
+        "breakfast": ["08:00", "09:00"],
+        "lunch": ["12:00", "13:00"],
+        "dinner": ["18:00", "19:00"]
+      }
+    },
+    "day_info": {
+      "is_first_day": false,
+      "is_last_day": false,
+      "date": "2025-04-17",
+      "weekday": "목요일"
+    }
+  }
+  

@@ -1,0 +1,99 @@
+{
+    "places": [
+    {
+        "id": 7,
+        "name": "호텔 난타",
+        "x_cord": 126.532199,
+        "y_cord": 33.500633,
+        "category": "accommodation",
+        "open_time": "07:00",
+        "close_time": "12:00",
+        "service_time": 30,
+        "tags": ["숙소", "체크아웃"],
+        "휴무일": [],
+        "break_time": []
+        },
+      {
+        "id": 1,
+        "name": "브런치 카페",
+        "x_cord": 126.501000,
+        "y_cord": 33.501000,
+        "category": "restaurant",
+        "open_time": "10:00",
+        "close_time": "11:00",
+        "service_time": 60,
+        "tags": ["식당", "브런치"],
+        "휴무일": [],
+        "break_time": []
+      },
+      {
+        "id": 2,
+        "name": "석식 전문점",
+        "x_cord": 126.502000,
+        "y_cord": 33.502000,
+        "category": "restaurant",
+        "open_time": "19:30",
+        "close_time": "21:00",
+        "service_time": 60,
+        "tags": ["식당", "석식"],
+        "휴무일": [],
+        "break_time": []
+      },
+      {
+        "id": 3,
+        "name": "야식포차",
+        "x_cord": 126.503000,
+        "y_cord": 33.503000,
+        "category": "restaurant",
+        "open_time": "21:00",
+        "close_time": "02:00",
+        "service_time": 60,
+        "tags": ["식당", "야식"],
+        "휴무일": [],
+        "break_time": []
+      },
+      {
+        "id": 4,
+        "name": "용머리해안",
+        "x_cord": 126.752000,
+        "y_cord": 33.218000,
+        "category": "landmark",
+        "open_time": "09:00",
+        "close_time": "18:00",
+        "service_time": 60,
+        "tags": ["자연", "해변"],
+        "휴무일": [],
+        "break_time": []
+      },
+      {
+        "id": 7,
+        "name": "호텔 난타",
+        "x_cord": 126.532199,
+        "y_cord": 33.500633,
+        "category": "accommodation",
+        "open_time": "07:00",
+        "close_time": "23:00",
+        "service_time": 30,
+        "tags": ["숙소", "체크아웃"],
+        "휴무일": [],
+        "break_time": []
+        }
+    ],
+    "user": {
+      "start_time": "08:00",
+      "end_time": "20:00",
+      "travel_style": "relaxed",
+      "meal_time_preferences": {
+        "breakfast": ["08:00", "09:00"],
+        "lunch": ["12:00", "13:00"],
+        "dinner": ["18:00", "19:00"]
+      }
+    },
+    "day_info": {
+      "is_first_day": true,
+      "is_last_day": false,
+      "date": "2025-04-16",
+      "weekday": "수요일"
+    }
+  }
+  

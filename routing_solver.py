@@ -56,11 +56,35 @@ def split_restaurant_nodes(places, effective_windows):
     return new_places, new_effective_windows
 
 def run_model(selected_places, selected_eff_windows, day_info, user):
+    start_idx, end_idx = determine_start_end_indices(selected_places, day_info)
+    
+    global_start_val = time_to_minutes(user["start_time"])
+    global_end_val = time_to_minutes(user["end_time"])
+    
+    if end_idx is None:
+        dummy_node = {
+            "name": "dummy",
+            "category": "dummy",
+            "service_time": 0,
+            "x_cord": 0.0,  
+            "y_cord": 0.0   
+        }
+        selected_places.append(dummy_node)
+        dummy_eff_window = (global_start_val, global_end_val, None)
+        selected_eff_windows.append(dummy_eff_window)
+        end_idx = len(selected_places) - 1
+
     local_distance_matrix = create_distance_matrix(selected_places)
     local_service_times = [p.get("service_time", 0) for p in selected_places]
     num_locations = len(selected_places)
-    start_idx, end_idx = determine_start_end_indices(selected_places, day_info)
     
+    for i in range(num_locations):
+        local_distance_matrix[i][end_idx] = 0
+        local_distance_matrix[end_idx][i] = 0
+
+    pprint.pprint("[DEBUG] run_model: 최종 거리 행렬")
+    pprint.pprint(local_distance_matrix)
+
     local_manager = pywrapcp.RoutingIndexManager(num_locations, 1, [start_idx], [end_idx])
     local_routing = pywrapcp.RoutingModel(local_manager)
     
@@ -72,19 +96,15 @@ def run_model(selected_places, selected_eff_windows, day_info, user):
     transit_cb_idx = local_routing.RegisterTransitCallback(local_transit_callback)
     local_routing.SetArcCostEvaluatorOfAllVehicles(transit_cb_idx)
     
-    global_start_val = time_to_minutes(user["start_time"])
-    global_end_val = time_to_minutes(user["end_time"])
     time_dim_name = "Time"
     local_routing.AddDimension(
         transit_cb_idx, 1000, global_end_val, False, time_dim_name
     )
     time_dimension = local_routing.GetMutableDimension(time_dim_name)
     
-    # 시작 노드 시간 고정
     start_internal = local_routing.Start(0)
     time_dimension.CumulVar(start_internal).SetRange(global_start_val, global_start_val)
     
-    # 각 노드별 시간 윈도우 설정
     for i, (abs_open, abs_close, _) in enumerate(selected_eff_windows):
         if i == start_idx or i == end_idx:
             continue
@@ -98,7 +118,6 @@ def run_model(selected_places, selected_eff_windows, day_info, user):
     search_params.first_solution_strategy = routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC
     search_params.time_limit.seconds = 10
     
-    pprint.pprint("[DEBUG] run_model: OR-Tools 솔버 실행 전 설정")
     sol = local_routing.SolveWithParameters(search_params)
     if sol:
         route = []
@@ -137,9 +156,6 @@ def run_model(selected_places, selected_eff_windows, day_info, user):
             "departure_str": minutes_to_time_str(departure),
             "stay_duration": service
         })
-        # pprint.pprint("[DEBUG] run_model: 솔루션 발견, 경로 및 목적 함수 값")
-        # pprint.pprint(route)
-        # pprint.pprint(f"[DEBUG] Objective Value: {sol.ObjectiveValue()}")
         return route, sol.ObjectiveValue()
     else:
         pprint.pprint("[DEBUG] run_model: 솔루션을 찾지 못함")

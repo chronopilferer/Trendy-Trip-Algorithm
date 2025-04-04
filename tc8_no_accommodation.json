@@ -1,0 +1,85 @@
+{
+  "places": [
+    {
+      "id": 7,
+      "name": "호텔 난타",
+      "x_cord": 126.532199,
+      "y_cord": 33.500633,
+      "category": "accommodation",
+      "open_time": "07:00",
+      "close_time": "12:00",
+      "service_time": 30,
+      "tags": ["숙소", "체크아웃"],
+      "휴무일": [],
+      "break_time": []
+    },
+    {
+      "id": 1,
+      "name": "성산일출봉",
+      "x_cord": 126.940000,
+      "y_cord": 33.458000,
+      "category": "landmark",
+      "open_time": "07:00",
+      "close_time": "19:00",
+      "service_time": 90,
+      "tags": ["자연", "등산"],
+      "휴무일": [],
+      "break_time": ["12:00", "13:00"]
+    },
+    {
+      "id": 2,
+      "name": "우도 잠수함",
+      "x_cord": 126.951000,
+      "y_cord": 33.507000,
+      "category": "landmark",
+      "open_time": "09:00",
+      "close_time": "17:00",
+      "service_time": 60,
+      "tags": ["체험", "해양"],
+      "휴무일": [],
+      "break_time": []
+    },
+    {
+      "id": 3,
+      "name": "중식당",
+      "x_cord": 126.952000,
+      "y_cord": 33.510000,
+      "category": "restaurant",
+      "open_time": "11:30",
+      "close_time": "14:00",
+      "service_time": 60,
+      "tags": ["식당", "중식"],
+      "휴무일": [],
+      "break_time": []
+    },
+    {
+      "id": 4,
+      "name": "카페 바다풍경",
+      "x_cord": 126.955000,
+      "y_cord": 33.512000,
+      "category": "cafe",
+      "open_time": "10:00",
+      "close_time": "20:00",
+      "service_time": 45,
+      "tags": ["카페", "뷰맛집"],
+      "휴무일": [],
+      "break_time": []
+    }
+  ],
+  "user": {
+    "start_time": "08:00",
+    "end_time": "21:00",
+    "travel_style": "relaxed",
+    "meal_time_preferences": {
+      "breakfast": ["08:00", "09:00"],
+      "lunch": ["12:00", "13:00"],
+      "dinner": ["18:00", "19:00"]
+    }
+  },
+  "day_info": {
+    "is_first_day": false,
+    "is_last_day": false,
+    "date": "2025-04-15",
+    "weekday": "화요일"
+  }
+}

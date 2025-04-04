@@ -50,15 +50,15 @@ def determine_start_end_indices(places, day_info):
 
     # 첫날이면서 당일치기가 아닌 경우
     # - 시작(0번 인덱스)는 반드시 transport여야 합니다.
-    # - 전체 리스트에서 accommodation 카테고리는 정확히 1개여야 하며, 해당 인덱스를 end_index로 사용합니다.
+    # - 숙소(accommodation)가 2개 이상이면 오류를 발생시키고, 그렇지 않으면 end_index는 지정하지 않습니다.
     if is_first_day and not is_last_day:
         validate_first_place(places, "transport", "첫날의 첫 번째 노드는 반드시 transport이어야 합니다.")
         start_index = 0
 
         accommodation_indices = [idx for idx, p in enumerate(places) if is_accommodation(p)]
-        if len(accommodation_indices) != 1:
-            raise ValueError(f"첫날에는 accommodation 카테고리가 정확히 1개 있어야 합니다. 현재 {len(accommodation_indices)}개 발견됨.")
-        end_index = accommodation_indices[0]
+        if len(accommodation_indices) >= 2:
+            raise ValueError(f"첫날에는 accommodation 카테고리가 두개 이상 있으면 안 됩니다. 현재 {len(accommodation_indices)}개 발견됨.")
+        end_index = None
 
     # 당일치기 (첫날이면서 동시에 마지막 날인 경우)
     # - 시작(0번 인덱스)는 반드시 transport여야 합니다.
@@ -91,7 +91,7 @@ def determine_start_end_indices(places, day_info):
     # 중간 날(첫날도 마지막 날도 아닌 경우)
     # - 시작(0번 인덱스)는 반드시 accommodation이어야 합니다.
     # - 중간 날에는 transport 카테고리가 전혀 존재하면 안 됩니다.
-    # - 첫 번째 노드를 제외한 리스트에서 accommodation 카테고리는 정확히 1개여야 하며, 이를 end_index로 사용합니다.
+    # - 첫 번째 노드를 제외한 리스트에서 accommodation 카테고리가 2개 이상이면 오류를 발생시키고, 그렇지 않으면 end_index는 지정하지 않습니다.
     else:
         validate_first_place(places, "accommodation", "중간 날의 시작 노드(0번 인덱스)는 반드시 accommodation이어야 합니다.")
         start_index = 0
@@ -100,8 +100,8 @@ def determine_start_end_indices(places, day_info):
             raise ValueError("중간 날에는 transport 카테고리가 존재하면 안 됩니다.")
 
         accommodation_indices = [idx for idx, p in enumerate(places[1:], start=1) if is_accommodation(p)]
-        if len(accommodation_indices) != 1:
-            raise ValueError(f"중간 날에는 첫 번째 노드를 제외하고 accommodation 카테고리가 정확히 1개 있어야 합니다. 현재 {len(accommodation_indices)}개 발견됨.")
-        end_index = accommodation_indices[0]
+        if len(accommodation_indices) >= 2:
+            raise ValueError(f"중간 날에는 첫 번째 노드를 제외한 accommodation 카테고리가 두개 이상 있으면 안 됩니다. 현재 {len(accommodation_indices)}개 발견됨.")
+        end_index = None
 
     return start_index, end_index
