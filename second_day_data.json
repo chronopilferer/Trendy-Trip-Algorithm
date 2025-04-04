@@ -1,0 +1,69 @@
+{
+    "places": [
+      {
+        "id": 7,
+        "name": "전통 제주 음식점",
+        "x_cord": 126.561000,
+        "y_cord": 33.430000,
+        "category": "restaurant",
+        "open_time": "11:00",
+        "close_time": "21:00",
+        "service_time": 70,
+        "tags": ["식당", "전통음식"],
+        "휴무일": []
+      },
+      {
+        "id": 2,
+        "name": "호텔 난타",
+        "x_cord": 126.532199,
+        "y_cord": 33.500633,
+        "category": "accommodation",
+        "open_time": "15:00",
+        "close_time": "23:00",
+        "service_time": 0,
+        "tags": ["숙소", "편안함"],
+        "휴무일": []
+      },
+      {
+        "id": 10,
+        "name": "카페 델문도",
+        "x_cord": 126.742000,
+        "y_cord": 33.435000,
+        "category": "cafe",
+        "open_time": "10:00",
+        "close_time": "20:00",
+        "service_time": 40,
+        "tags": ["카페", "뷰맛집", "휴식"],
+        "휴무일": []
+      },
+      {
+        "id": 12,
+        "name": "제주 해녀 박물관",
+        "x_cord": 126.774000,
+        "y_cord": 33.543000,
+        "category": "cultural",
+        "open_time": "09:00",
+        "close_time": "17:00",
+        "service_time": 60,
+        "tags": ["문화", "역사", "해녀"],
+        "휴무일": ["월요일"]
+      }
+    ],
+    "user": {
+      "start_time": "08:00",
+      "end_time": "18:00",
+      "travel_style": "cultural",
+      "meal_time_preferences": {
+        "breakfast": ["08:00", "09:00"],
+        "lunch": ["12:00", "13:00"],
+        "dinner": ["18:00", "19:00"]
+      }
+    },
+    "day_info": {
+      "is_first_day": false,
+      "is_last_day": false,
+      "date": "2025-03-28",
+      "weekday": "금요일"
+    }
+  }
+  
