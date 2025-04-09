@@ -1,0 +1,47 @@
+{
+    "places": [
+      {
+        "id": 12,
+        "name": "호텔 블루하버",
+        "x_cord": 126.300000,
+        "y_cord": 33.390000,
+        "category": "accommodation",
+        "open_time": "15:00",
+        "close_time": "23:00",
+        "service_time": 0,
+        "tags": ["숙소", "뷰좋음"],
+        "휴무일": [],
+        "break_time": []
+      },
+      {
+        "id": 11,
+        "name": "오설록 티뮤지엄",
+        "x_cord": 126.284000,
+        "y_cord": 33.305000,
+        "category": "landmark",
+        "open_time": "09:00",
+        "close_time": "18:00",
+        "service_time": 60,
+        "tags": ["박물관", "차"],
+        "휴무일": [],
+        "break_time": []
+      }
+    ],
+    "user": {
+      "start_time": "09:00",
+      "end_time": "21:00",
+      "travel_style": "relaxed",
+      "meal_time_preferences": {
+        "breakfast": ["09:00", "10:00"],
+        "lunch": ["13:00", "14:00"],
+        "dinner": ["18:00", "19:00"]
+      }
+    },
+    "day_info": {
+      "is_first_day": false,
+      "is_last_day": false,
+      "date": "2025-04-11",
+      "weekday": "금요일"
+    }
+  }
+  

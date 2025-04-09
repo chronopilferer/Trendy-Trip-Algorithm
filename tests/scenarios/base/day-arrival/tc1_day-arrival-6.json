@@ -1,0 +1,105 @@
+{
+    "places": [
+      {
+        "id": 1,
+        "name": "제주공항",
+        "x_cord": 126.492153,
+        "y_cord": 33.505413,
+        "category": "transport",
+        "open_time": "08:00",
+        "close_time": "08:00",
+        "service_time": 0,
+        "tags": ["공항", "입국"],
+        "휴무일": [],
+        "break_time": [],
+        "is_mandatory": true
+      },
+      {
+        "id": 2,
+        "name": "조식당",
+        "x_cord": 126.491000,
+        "y_cord": 33.506000,
+        "category": "restaurant",
+        "open_time": "07:30",
+        "close_time": "09:30",
+        "service_time": 60,
+        "tags": ["식당", "조식"],
+        "휴무일": [],
+        "break_time": [],
+        "is_mandatory": false
+      },
+      {
+        "id": 3,
+        "name": "한라산 국립공원",
+        "x_cord": 126.533000,
+        "y_cord": 33.361000,
+        "category": "landmark",
+        "open_time": "08:00",
+        "close_time": "17:00",
+        "service_time": 90,
+        "tags": ["자연", "등산"],
+        "휴무일": [],
+        "break_time": [],
+        "is_mandatory": true
+      },
+      {
+        "id": 5,
+        "name": "용머리해안",
+        "x_cord": 126.752000,
+        "y_cord": 33.218000,
+        "category": "landmark",
+        "open_time": "09:00",
+        "close_time": "18:00",
+        "service_time": 60,
+        "tags": ["자연", "해변"],
+        "휴무일": [],
+        "break_time": [],
+        "is_mandatory": false
+      },
+      {
+        "id": 6,
+        "name": "석식당",
+        "x_cord": 126.500000,
+        "y_cord": 33.510000,
+        "category": "restaurant",
+        "open_time": "17:30",
+        "close_time": "20:00",
+        "service_time": 60,
+        "tags": ["식당", "석식"],
+        "휴무일": [],
+        "break_time": [],
+        "is_mandatory": false
+      },
+      {
+        "id": 7,
+        "name": "호텔 난타",
+        "x_cord": 126.532199,
+        "y_cord": 33.500633,
+        "category": "accommodation",
+        "open_time": "15:00",
+        "close_time": "23:00",
+        "service_time": 0,
+        "tags": ["숙소", "편안함"],
+        "휴무일": [],
+        "break_time": [],
+        "is_mandatory": true
+      }
+    ],
+    "user": {
+      "start_time": "08:00",
+      "end_time": "21:00",
+      "travel_style": "relaxed",
+      "meal_time_preferences": {
+        "breakfast": ["08:00", "09:00"],
+        "lunch": ["12:00", "13:00"],
+        "dinner": ["18:00", "19:00"]
+      }
+    },
+    "day_info": {
+      "is_first_day": true,
+      "is_last_day": false,
+      "date": "2025-04-10",
+      "weekday": "목요일"
+    }
+  }
+  

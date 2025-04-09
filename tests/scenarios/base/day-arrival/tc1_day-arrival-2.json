@@ -1,0 +1,49 @@
+{
+    "places": [
+      {
+        "id": 1,
+        "name": "제주공항",
+        "x_cord": 126.492153,
+        "y_cord": 33.505413,
+        "category": "transport",
+        "open_time": "08:00",
+        "close_time": "08:00",
+        "service_time": 0,
+        "tags": ["공항", "입국"],
+        "휴무일": [],
+        "break_time": [],
+        "is_mandatory": true
+      },
+      {
+        "id": 3,
+        "name": "한라산 국립공원",
+        "x_cord": 126.533000,
+        "y_cord": 33.361000,
+        "category": "landmark",
+        "open_time": "08:00",
+        "close_time": "17:00",
+        "service_time": 90,
+        "tags": ["자연", "등산"],
+        "휴무일": [],
+        "break_time": [],
+        "is_mandatory": true
+      }
+    ],
+    "user": {
+      "start_time": "08:00",
+      "end_time": "21:00",
+      "travel_style": "relaxed",
+      "meal_time_preferences": {
+        "breakfast": ["08:00", "09:00"],
+        "lunch": ["12:00", "13:00"],
+        "dinner": ["18:00", "19:00"]
+      }
+    },
+    "day_info": {
+      "is_first_day": true,
+      "is_last_day": false,
+      "date": "2025-04-10",
+      "weekday": "목요일"
+    }
+  }
+  

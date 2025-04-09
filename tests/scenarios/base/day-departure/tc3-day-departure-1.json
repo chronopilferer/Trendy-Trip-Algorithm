@@ -1,0 +1,47 @@
+{
+    "places": [
+      {
+        "id": 7,
+        "name": "호텔 난타",
+        "x_cord": 126.532199,
+        "y_cord": 33.500633,
+        "category": "accommodation",
+        "open_time": "07:00",
+        "close_time": "12:00",
+        "service_time": 0,
+        "tags": ["숙소", "체크아웃"],
+        "휴무일": [],
+        "break_time": []
+      },
+      {
+        "id": 14,
+        "name": "제주공항",
+        "x_cord": 126.492153,
+        "y_cord": 33.505413,
+        "category": "transport",
+        "open_time": "17:00",
+        "close_time": "17:00",
+        "service_time": 0,
+        "tags": ["공항", "출국"],
+        "휴무일": [],
+        "break_time": []
+      }
+    ],
+    "user": {
+      "start_time": "08:00",
+      "end_time": "17:00",
+      "travel_style": "relaxed",
+      "meal_time_preferences": {
+        "breakfast": ["08:00", "09:00"],
+        "lunch": ["12:00", "13:00"],
+        "dinner": []
+      }
+    },
+    "day_info": {
+      "is_first_day": false,
+      "is_last_day": true,
+      "date": "2025-04-13",
+      "weekday": "일요일"
+    }
+  }
+  

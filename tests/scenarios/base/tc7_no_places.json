@@ -1,5 +1,18 @@
 {
-    "places": [],
+    "places": [
+      {
+        "id": 1,
+        "name": "제주공항",
+        "x_cord": 126.492153,
+        "y_cord": 33.505413,
+        "category": "transport",
+        "open_time": "08:00",
+        "close_time": "08:00",
+        "service_time": 30,
+        "tags": ["공항", "입국"],
+        "휴무일": []
+      }
+    ],
     "user": {
       "start_time": "08:00",
       "end_time": "20:00",
@@ -11,7 +24,7 @@
       }
     },
     "day_info": {
-      "is_first_day": false,
+      "is_first_day": true,
       "is_last_day": false,
       "date": "2025-04-14",
       "weekday": "월요일"

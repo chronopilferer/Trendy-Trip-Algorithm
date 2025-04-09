@@ -11,7 +11,8 @@
         "service_time": 30,
         "tags": ["숙소", "체크아웃"],
         "휴무일": [],
-        "break_time": []
+        "break_time": [],
+        "is_mandatory": true
         },
       {
         "id": 1,
@@ -24,7 +25,8 @@
         "service_time": 120,
         "tags": ["자연", "등산"],
         "휴무일": [],
-        "break_time": []
+        "break_time": [],
+        "is_mandatory": false
       },
       {
         "id": 2,
@@ -37,7 +39,8 @@
         "service_time": 60,
         "tags": ["자연", "해변"],
         "휴무일": [],
-        "break_time": []
+        "break_time": [],
+        "is_mandatory": false
       },
       {
         "id": 3,
@@ -50,7 +53,8 @@
         "service_time": 60,
         "tags": ["자연", "폭포"],
         "휴무일": [],
-        "break_time": []
+        "break_time": [],
+        "is_mandatory": false
       },
       {
         "id": 4,
@@ -63,7 +67,8 @@
         "service_time": 90,
         "tags": ["쇼핑", "관광"],
         "휴무일": [],
-        "break_time": []
+        "break_time": [],
+        "is_mandatory": false
       },
       {
         "id": 5,
@@ -76,7 +81,8 @@
         "service_time": 60,
         "tags": ["시장", "쇼핑"],
         "휴무일": [],
-        "break_time": []
+        "break_time": [],
+        "is_mandatory": false
       },
       {
         "id": 6,
@@ -89,7 +95,8 @@
         "service_time": 60,
         "tags": ["식당", "브런치"],
         "휴무일": [],
-        "break_time": []
+        "break_time": [],
+        "is_mandatory": false
       },
       {
         "id": 7,
@@ -102,7 +109,8 @@
         "service_time": 60,
         "tags": ["식당", "중식"],
         "휴무일": [],
-        "break_time": []
+        "break_time": [],
+        "is_mandatory": false
       },
       {
         "id": 8,
@@ -115,7 +123,8 @@
         "service_time": 60,
         "tags": ["식당", "석식"],
         "휴무일": [],
-        "break_time": []
+        "break_time": [],
+        "is_mandatory": false
       },
       {
         "id": 9,
@@ -128,7 +137,8 @@
         "service_time": 45,
         "tags": ["카페", "뷰맛집"],
         "휴무일": [],
-        "break_time": []
+        "break_time": [],
+        "is_mandatory": false
       },
       {
         "id": 10,
@@ -141,7 +151,8 @@
         "service_time": 60,
         "tags": ["박물관", "전통"],
         "휴무일": [],
-        "break_time": []
+        "break_time": [],
+        "is_mandatory": false
       },
       {
         "id": 7,
@@ -154,7 +165,8 @@
         "service_time": 30,
         "tags": ["숙소", "체크아웃"],
         "휴무일": [],
-        "break_time": []
+        "break_time": [],
+        "is_mandatory": true
         }
     ],
     "user": {
