@@ -195,3 +195,8 @@ pyrightconfig.json
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,python
 
 file_structure.py
+
+hashtag_generator/captions/
+hashtag_generator/filtered/
+hashtag_generator/images/
+hashtag_generator/old_captions/
