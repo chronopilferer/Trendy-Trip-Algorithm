@@ -81,7 +81,11 @@ def determine_start_end_indices(places, day_info):
         accommodation_indices = [idx for idx, p in enumerate(places) if is_accommodation(p)]
         if len(accommodation_indices) >= 2:
             raise ValueError(f"첫날에는 accommodation 카테고리가 두개 이상 있으면 안 됩니다. 현재 {len(accommodation_indices)}개 발견됨.")
-        end_index = None
+        elif len(accommodation_indices) == 1:
+            accommodation_index = accommodation_indices[0]
+            end_index = accommodation_index
+        else:
+            end_index = None
 
     # 당일치기 (첫날이면서 동시에 마지막 날인 경우)
     # - 시작(0번 인덱스)는 반드시 transport여야 합니다.
@@ -125,6 +129,9 @@ def determine_start_end_indices(places, day_info):
         accommodation_indices = [idx for idx, p in enumerate(places[1:], start=1) if is_accommodation(p)]
         if len(accommodation_indices) >= 2:
             raise ValueError(f"중간 날에는 첫 번째 노드를 제외한 accommodation 카테고리가 두개 이상 있으면 안 됩니다. 현재 {len(accommodation_indices)}개 발견됨.")
-        end_index = None
+        elif len(accommodation_indices) == 1:
+            end_index = accommodation_indices[0]
+        else:
+            end_index = None
 
     return start_index, end_index
