@@ -1,0 +1,33 @@
+# YOLO 
+model:
+  yolo_path: "models/yolov8m.pt"
+
+# 이미지 캡션 
+captioning:
+  blip_model: "Salesforce/instructblip-vicuna-7b"
+  image_folder: "./data/images_filtered/step-3/적합"
+  output_folder: "./data/captions"
+  prompt: >
+    Describe what is shown in the image.
+    Mention setting, objects, and any visible emotion or mood.
+
+# LLM 적합도 판단
+judgement:
+  model: "google/gemma-3-12b-it"
+  input_folder: "./data/captions"
+  output_folder: "./data/captions"
+  prompt_template: >
+    The following caption is intended for use in generating social media hashtags.
+    Caption: "{caption}"
+    Does this caption contain enough descriptive and relevant content to generate effective hashtags?
+    Answer with one word: Suitable or Unsuitable.
+  suitable_keywords: ["suitable"]
+  unsuitable_keywords: ["unsuitable"]
+  skip_if_judged: true
+  max_new_tokens: 30
+  response_field_name: "filter_response"
+  temperature: 0.7
+  top_p: 0.9
+  log_path: "./data/logs"
+
+

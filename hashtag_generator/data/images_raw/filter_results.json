@@ -1,0 +1,608 @@
+{
+  "12제라_4.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 7.616320610046387
+  },
+  "12제라_5.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 7.390237808227539
+  },
+  "1727노리터_3.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 6.98414421081543
+  },
+  "1800MOOD_2.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 6.238637447357178
+  },
+  "1800MOOD_3.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 6.330539703369141
+  },
+  "272_커피_1.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 7.427450180053711
+  },
+  "272_커피_3.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 5.617131233215332
+  },
+  "3인칭관찰자시점_1.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 4.630904674530029
+  },
+  "52번가_2.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 6.960397243499756
+  },
+  "52번가_3.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 7.454137802124023
+  },
+  "60빈스_1.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 7.805757522583008
+  },
+  "8989_3.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 7.075944900512695
+  },
+  "aaa_jeju_1.jpg": {
+    "status": "fail",
+    "light": "too_bright",
+    "low_resolution": false,
+    "low_entropy": true,
+    "entropy_score": 0.6079943180084229,
+    "reason": "too_bright"
+  },
+  "aaa_jeju_3.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 7.513124465942383
+  },
+  "aaa_jeju_5.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 7.400306224822998
+  },
+  "ABC_에이팩토리베이커리카페_4.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 7.624136447906494
+  },
+  "ALBERO_4.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 7.533205509185791
+  },
+  "ALBERO_5.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 7.43975305557251
+  },
+  "CAFE_LINDA_반격의서막_5.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 7.3133864402771
+  },
+  "comet1987_3.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 7.2357354164123535
+  },
+  "comet1987_4.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 7.394540786743164
+  },
+  "comet1987_5.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 7.453970432281494
+  },
+  "DEMUCOFFEE_2.jpg": {
+    "status": "fail",
+    "light": "too_dark",
+    "low_resolution": false,
+    "low_entropy": true,
+    "entropy_score": 0.3986958861351013,
+    "reason": "too_dark"
+  },
+  "DKLEE_5.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 6.488316059112549
+  },
+  "FIORE_4.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 5.793490409851074
+  },
+  "FLAT172_4.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 6.651447296142578
+  },
+  "LLLF_1.jpg": {
+    "status": "fail",
+    "light": "too_bright",
+    "low_resolution": false,
+    "low_entropy": true,
+    "entropy_score": 1.5005135536193848,
+    "reason": "too_bright"
+  },
+  "N109_5.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 6.21115255355835
+  },
+  "nookaewol_2.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 6.4878339767456055
+  },
+  "nookaewol_3.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 7.16588830947876
+  },
+  "parc3_1.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 5.893375396728516
+  },
+  "parc3_2.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 3.6899752616882324
+  },
+  "Petit_5.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 7.411177158355713
+  },
+  "rnr_1.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 6.299396514892578
+  },
+  "THE271_5.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 7.340549468994141
+  },
+  "woody_glade_1.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 5.733283996582031
+  },
+  "woody_glade_4.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 6.749306678771973
+  },
+  "WORLD_CLASS_FISH&CHIPS_1.jpg": {
+    "status": "fail",
+    "light": "too_bright",
+    "low_resolution": false,
+    "low_entropy": true,
+    "entropy_score": 1.0623645782470703,
+    "reason": "too_bright"
+  },
+  "WORLD_CLASS_FISH&CHIPS_2.jpg": {
+    "status": "fail",
+    "light": "too_bright",
+    "low_resolution": false,
+    "low_entropy": true,
+    "entropy_score": 0.7815307974815369,
+    "reason": "too_bright"
+  },
+  "WORLD_CLASS_FISH&CHIPS_3.jpg": {
+    "status": "fail",
+    "light": "too_bright",
+    "low_resolution": false,
+    "low_entropy": true,
+    "entropy_score": 0.9424435496330261,
+    "reason": "too_bright"
+  },
+  "YULLAND_CAFE_1.jpg": {
+    "status": "fail",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": true,
+    "entropy_score": 2.5336360931396484,
+    "reason": "low_entropy"
+  },
+  "가온해_4.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 6.8536553382873535
+  },
+  "가을남자의커피향기_1.jpg": {
+    "status": "fail",
+    "light": "too_bright",
+    "low_resolution": false,
+    "low_entropy": true,
+    "entropy_score": 0.6530903577804565,
+    "reason": "too_bright"
+  },
+  "가파도엔_아이스크림_3.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 7.7058305740356445
+  },
+  "거문오름카페_1.jpg": {
+    "status": "fail",
+    "light": "too_bright",
+    "low_resolution": false,
+    "low_entropy": true,
+    "entropy_score": 3.4050612449645996,
+    "reason": "too_bright"
+  },
+  "거문오름카페_2.jpg": {
+    "status": "fail",
+    "light": "too_bright",
+    "low_resolution": false,
+    "low_entropy": true,
+    "entropy_score": 2.9499142169952393,
+    "reason": "too_bright"
+  },
+  "걸리버여행기_3.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 7.7760820388793945
+  },
+  "걸리버여행기_4.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 7.239673614501953
+  },
+  "게무로사_4.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 5.295577049255371
+  },
+  "골든망고_신창풍차해안본점_2.jpg": {
+    "status": "fail",
+    "light": "too_bright",
+    "low_resolution": false,
+    "low_entropy": true,
+    "entropy_score": 1.4841886758804321,
+    "reason": "too_bright"
+  },
+  "그럼피_베이비_2.jpg": {
+    "status": "fail",
+    "light": "ok",
+    "low_resolution": true,
+    "low_entropy": true,
+    "entropy_score": 2.769543409347534,
+    "reason": "low_resolution"
+  },
+  "그레인디저트랩_1.jpg": {
+    "status": "fail",
+    "light": "too_bright",
+    "low_resolution": false,
+    "low_entropy": true,
+    "entropy_score": 1.728445053100586,
+    "reason": "too_bright"
+  },
+  "그리트커피_1.jpg": {
+    "status": "fail",
+    "light": "too_bright",
+    "low_resolution": false,
+    "low_entropy": true,
+    "entropy_score": 1.4352076053619385,
+    "reason": "too_bright"
+  },
+  "그릭이요_1.jpg": {
+    "status": "fail",
+    "light": "too_bright",
+    "low_resolution": true,
+    "low_entropy": true,
+    "entropy_score": 2.061923027038574,
+    "reason": "too_bright"
+  },
+  "길벅_1.jpg": {
+    "status": "fail",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": true,
+    "entropy_score": 2.6850595474243164,
+    "reason": "low_entropy"
+  },
+  "길벅_3.jpg": {
+    "status": "fail",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": true,
+    "entropy_score": 0.746103048324585,
+    "reason": "low_entropy"
+  },
+  "까망도그_김녕_1.jpg": {
+    "status": "fail",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": true,
+    "entropy_score": 2.7494957447052,
+    "reason": "low_entropy"
+  },
+  "까페제주웰컴센터_2.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 6.596796035766602
+  },
+  "꽈페제주협재점_1.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 7.653604507446289
+  },
+  "꽈페제주협재점_2.jpg": {
+    "status": "fail",
+    "light": "too_bright",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 7.0143537521362305,
+    "reason": "too_bright"
+  },
+  "꽈페제주협재점_3.jpg": {
+    "status": "fail",
+    "light": "too_bright",
+    "low_resolution": false,
+    "low_entropy": true,
+    "entropy_score": 2.564789295196533,
+    "reason": "too_bright"
+  },
+  "나인브로스커피_1.jpg": {
+    "status": "fail",
+    "light": "too_bright",
+    "low_resolution": false,
+    "low_entropy": true,
+    "entropy_score": 0.8679741621017456,
+    "reason": "too_bright"
+  },
+  "나인브로스커피_2.jpg": {
+    "status": "fail",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": true,
+    "entropy_score": 2.115985631942749,
+    "reason": "low_entropy"
+  },
+  "날쌘카페_제주그림카페점_3.jpg": {
+    "status": "pass",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": false,
+    "entropy_score": 7.585000991821289
+  },
+  "날쌘카페_제주노형점_1.jpg": {
+    "status": "fail",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": true,
+    "entropy_score": 1.4243625402450562,
+    "reason": "low_entropy"
+  },
+  "날쌘카페_제주법원점_1.jpg": {
+    "status": "fail",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": true,
+    "entropy_score": 0.7205487489700317,
+    "reason": "low_entropy"
+  },
+  "네이비카페&펍_3.jpg": {
+    "status": "fail",
+    "light": "too_bright",
+    "low_resolution": false,
+    "low_entropy": true,
+    "entropy_score": 2.817103862762451,
+    "reason": "too_bright"
+  },
+  "달리는커피_제주아라점_1.jpg": {
+    "status": "fail",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": true,
+    "entropy_score": 0.9342228770256042,
+    "reason": "low_entropy"
+  },
+  "달리는커피_제주외도점_1.jpg": {
+    "status": "fail",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": true,
+    "entropy_score": 0.9342228770256042,
+    "reason": "low_entropy"
+  },
+  "달리는커피_제주일도점_1.jpg": {
+    "status": "fail",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": true,
+    "entropy_score": 0.9342228770256042,
+    "reason": "low_entropy"
+  },
+  "달리는커피_한림점_1.jpg": {
+    "status": "fail",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": true,
+    "entropy_score": 0.9342228770256042,
+    "reason": "low_entropy"
+  },
+  "달리는커피_혁신도시점_1.jpg": {
+    "status": "fail",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": true,
+    "entropy_score": 0.9342228770256042,
+    "reason": "low_entropy"
+  },
+  "달콤왕가탕후루_삼화점_1.jpg": {
+    "status": "fail",
+    "light": "too_bright",
+    "low_resolution": false,
+    "low_entropy": true,
+    "entropy_score": 2.4632349014282227,
+    "reason": "too_bright"
+  },
+  "대단한요거트_틴더타운점_1.jpg": {
+    "status": "fail",
+    "light": "ok",
+    "low_resolution": false,
+    "low_entropy": true,
+    "entropy_score": 1.6062862873077393,
+    "reason": "low_entropy"
+  },
+  "대단한요거트_틴더타운점_2.jpg": {
+    "status": "fail",
+    "light": "too_bright",
+    "low_resolution": false,
+    "low_entropy": true,
+    "entropy_score": 3.2668204307556152,
+    "reason": "too_bright"
+  },
+  "대단한요거트_틴더타운점_3.jpg": {
+    "status": "fail",
+    "light": "ok",
+    "low_resolution": true,
+    "low_entropy": false,
+    "entropy_score": 5.470253944396973,
+    "reason": "low_resolution"
+  },
+  "대단한탕후루_노형1호점_1.jpg": {
+    "status": "fail",
+    "light": "too_bright",
+    "low_resolution": false,
+    "low_entropy": true,
+    "entropy_score": 1.6824243068695068,
+    "reason": "too_bright"
+  },
+  "대단한탕후루_제주이도점_1.jpg": {
+    "status": "fail",
+    "light": "too_bright",
+    "low_resolution": false,
+    "low_entropy": true,
+    "entropy_score": 1.6824243068695068,
+    "reason": "too_bright"
+  },
+  "더벤티_서귀포신시가지점_1.jpg": {
+    "status": "fail",
+    "light": "too_bright",
+    "low_resolution": false,
+    "low_entropy": true,
+    "entropy_score": 0.7853704690933228,
+    "reason": "too_bright"
+  },
+  "더벤티_서귀포올레시장점_1.jpg": {
+    "status": "fail",
+    "light": "too_bright",
+    "low_resolution": false,
+    "low_entropy": true,
+    "entropy_score": 0.7853704690933228,
+    "reason": "too_bright"
+  },
+  "딕시_1.jpg": {
+    "status": "fail",
+    "light": "too_bright",
+    "low_resolution": false,
+    "low_entropy": true,
+    "entropy_score": 2.217397451400757,
+    "reason": "too_bright"
+  }
+}
