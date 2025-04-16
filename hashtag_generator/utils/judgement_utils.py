@@ -40,3 +40,13 @@ def filter_caption(caption: str, tokenizer, model, device: str, config: dict) ->
     judgement = extract_judgement(response, prompt, config)
     return judgement, response
 
+def copy_image_by_judgement(img_path, filtered_base_dir, judgement):
+    if not img_path or not os.path.exists(img_path):
+        print(f"[이미지 없음] {img_path}")
+        return
+
+    file_name = os.path.basename(img_path)
+    target_dir = os.path.join(filtered_base_dir, judgement)
+    os.makedirs(target_dir, exist_ok=True)
+    shutil.copy(img_path, os.path.join(target_dir, file_name))
+    print(f"[이미지 복사됨] {img_path} → {target_dir}")
