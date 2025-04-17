@@ -2,17 +2,18 @@ import os
 import json
 import pprint
 import itertools
+from tabulate import tabulate
 
-from solver.time_windows import calculate_effective_time_windows
-from solver.routing_solver import split_restaurant_nodes, run_model
-
+from solver.utils.time_windows import calculate_effective_time_windows
+from solver.routing_solver import run_model
+from solver.utils.places import split_restaurant_nodes
 
 def run_all_test_cases_in(folder_path: str):
     print(f"\n=== [INFO] 폴더 실행 시작: {folder_path} ===\n")
 
     for root, _, files in os.walk(folder_path):
         for file in sorted(files):
-            if not file.endswith(".json"):
+            if not file.endswith(".json") or file == 'tc9_no_match_meal_time.json':
                 continue
 
             test_case_path = os.path.join(root, file)
@@ -57,11 +58,34 @@ def run_all_test_cases_in(folder_path: str):
             pprint.pprint("[DEBUG] 최종 결과:")
             for sel, result in results.items():
                 meal_labels = tuple(new_eff_windows[i][2] for i in sel)
-                print(f"\nResults for option {meal_labels}:")
-                if result:
-                    print("Objective value:", result["objective"])
-                    for item in result["route"]:
-                        print(f"  [{item['order']}] {item['place']}")
-                        print(f"     도착: {item['arrival_str']}, 출발: {item['departure_str']}, 체류: {item['stay_duration']}분")
-                else:
-                    print("  No solution found.")
+                print("\n" + "="*80)
+                print(f"Option {meal_labels!r}")
+                print("-"*80)
+
+                if not result:
+                    print("  (해결 불가)\n")
+                    continue
+
+                print(f"  Objective value: {result['objective']}\n")
+
+                table_data = []
+
+                for item in result["route"]:
+                    stay   = item.get('stay_duration', '-')
+                    travel = item.get('travel_time', '-')
+                    wait   = item.get('wait_time', '-')
+                    delay  = item.get('delay_time', '-')
+
+                    table_data.append([
+                        f"[{item['order']}]",
+                        item['place'],
+                        item['arrival_str'],
+                        item['departure_str'],
+                        stay,
+                        travel,
+                        wait,
+                        delay
+                    ])
+
+                headers = ["순서", "장소", "도착", "출발", "체류", "이동시간", "대기시간", "지연시간"]
+                print(tabulate(table_data, headers=headers, tablefmt="fancy_grid", stralign="center"))

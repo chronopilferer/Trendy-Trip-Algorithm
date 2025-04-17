@@ -1,4 +1,4 @@
-from solver.utils import time_to_minutes, adjust_for_midnight
+from solver.utils.time import time_to_minutes, adjust_for_midnight
 
 def intersect_interval(start1: int, end1: int, start2: int, end2: int):
     """
