@@ -4,7 +4,7 @@ from nltk.stem import WordNetLemmatizer
 from typing import List, Set
 
 def download_nltk_resources():
-    resources = ['punkt', 'punkt_tab', 'averaged_perceptron_tagger', 'wordnet']
+    resources = ['punkt', 'punkt_tab', 'averaged_perceptron_tagger', 'wordnet', 'stopwords']
     for r in resources:
         try:
             nltk.data.find(f'tokenizers/{r}')

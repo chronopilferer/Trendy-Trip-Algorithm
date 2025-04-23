@@ -60,6 +60,7 @@ def process_captioning(
         try:
             caption = generate_caption(image_path, processor, model, prompt, device)
             rec.update({"caption": caption})
+            print(f"caption: {caption}")
             save_result(rec, json_path)
             print(f"✅ 캡션 저장 완료: {json_path}")
 

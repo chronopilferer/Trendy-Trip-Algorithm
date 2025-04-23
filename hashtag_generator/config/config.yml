@@ -16,7 +16,7 @@ ocr:
 
 captioning:
   model: "Salesforce/instructblip-vicuna-7b"
-  prompt: "List all visible objects in the image with descriptions, separated by commas."
+  prompt: "Describe the entire scene in detail, including all visible objects and background elements, in a single concise sentence."
 
 LLM:
   model: "google/gemma-3-12b-it"
