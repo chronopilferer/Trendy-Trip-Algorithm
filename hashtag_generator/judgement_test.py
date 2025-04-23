@@ -1,15 +1,15 @@
 import os
 import json
 import torch
-from utils.config_loader import load_config
+from hashtag_generator.utils.config import load_config
 from utils.judgement_utils import load_filtering_model, filter_caption
 from datetime import datetime
 import shutil
 from pathlib import Path
 
 DATA_DIR = Path("./data")
-PASS_DIR = DATA_DIR / "images_filtered" / "step-4" / "적합"
-FAIL_DIR = DATA_DIR / "images_filtered" / "step-4" / "부적합"
+PASS_DIR = DATA_DIR / "images_filtered" / "step-3" / "적합"
+FAIL_DIR = DATA_DIR / "images_filtered" / "step-3" / "부적합"
 
 def process_json_files(input_folder: str, output_folder: str, tokenizer, model, device: str, log_path: str, config):
     os.makedirs(output_folder, exist_ok=True)

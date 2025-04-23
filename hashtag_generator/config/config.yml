@@ -7,9 +7,7 @@ captioning:
   blip_model: "Salesforce/instructblip-vicuna-7b"
   image_folder: "./data/images_filtered/step-3/적합"
   output_folder: "./data/captions"
-  prompt: >
-    Describe what is shown in the image.
-    Mention setting, objects, and any visible emotion or mood.
+  prompt: "List all visible objects in the image with short descriptions, separated by commas."
 
 # LLM 적합도 판단
 judgement:
@@ -30,4 +28,35 @@ judgement:
   top_p: 0.9
   log_path: "./data/logs"
 
+# 룰 기반 캡션 필터링
+caption_filtering:
+  food_keywords:
+    - bowl
+    - pizza
+    - ramen
+    - cake
+    - dish
+    - plate
+    - steak
+    - burger
+    - fries
+    - sushi
+    - spoon
+    - fork
 
+  emotional_context_keywords:
+    - window
+    - sunset
+    - book
+    - flower
+    - cat
+    - dog
+    - rain
+    - candle
+    - face
+    - smile
+    - couple
+    - person
+    - lamp
+    - street
+    - bed

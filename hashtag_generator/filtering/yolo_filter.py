@@ -13,3 +13,4 @@ def is_food_only_image(image_path: str) -> bool:
         return False
     labels = detect_objects_yolo(image)
     return is_food_only(labels)
+

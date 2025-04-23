@@ -1,6 +1,6 @@
 import os
 import shutil
-from filtering.rule_base_filter import image_filter_analysis
+from filtering.image_rule_filter import image_filter_analysis
 from pathlib import Path
 
 # 기본 경로
