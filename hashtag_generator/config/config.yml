@@ -1,34 +1,37 @@
-# YOLO 
-model:
-  yolo_path: "models/yolov8m.pt"
+path:
+  data_dir: "./data"
+  img_dir: "./data/images_raw"
+  output_dir: "./data/output"
+  json_dir: "./data/json"
 
-# 이미지 캡션 
+yolo:
+  model_path: "models/yolov8m.pt"
+  return_vis: true
+
+ocr:
+  return_vis: true
+  langs:
+    - "ko"
+    - "en"
+
 captioning:
-  blip_model: "Salesforce/instructblip-vicuna-7b"
-  image_folder: "./data/images_filtered/step-3/적합"
-  output_folder: "./data/captions"
-  prompt: "List all visible objects in the image with short descriptions, separated by commas."
+  model: "Salesforce/instructblip-vicuna-7b"
+  prompt: "List all visible objects in the image with descriptions, separated by commas."
 
-# LLM 적합도 판단
-judgement:
+LLM:
   model: "google/gemma-3-12b-it"
-  input_folder: "./data/captions"
-  output_folder: "./data/captions"
   prompt_template: >
-    The following caption is intended for use in generating social media hashtags.
     Caption: "{caption}"
-    Does this caption contain enough descriptive and relevant content to generate effective hashtags?
-    Answer with one word: Suitable or Unsuitable.
+    Is this caption detailed and specific enough to be used for generating relevant social media hashtags?
+    Answer in one word only: Suitable or Unsuitable.
   suitable_keywords: ["suitable"]
   unsuitable_keywords: ["unsuitable"]
   skip_if_judged: true
   max_new_tokens: 30
-  response_field_name: "filter_response"
+  response_field_name: "LLM_response"
   temperature: 0.7
   top_p: 0.9
-  log_path: "./data/logs"
 
-# 룰 기반 캡션 필터링
 caption_filtering:
   food_keywords:
     - bowl
@@ -44,7 +47,7 @@ caption_filtering:
     - spoon
     - fork
 
-  emotional_context_keywords:
+  emotional_keywords:
     - window
     - sunset
     - book
