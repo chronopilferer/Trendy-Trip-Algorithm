@@ -6,7 +6,7 @@ from typing import List, Tuple, Dict
 from ultralytics import YOLO
 
 from utils.draw import draw_boxes
-from utils.constants import DEFAULT_PERSON_AREA_THRESHOLD
+from utils.constants import DEFAULT_PERSON_AREA_THRESHOLD, TARGET_LABELS, DEFAULT_FOOD_AREA_THRESHOLD
 from utils.file_io import save_result, copy_image
 
 def load_yolo_model(model_path: str) -> YOLO:
@@ -22,30 +22,39 @@ def detect_objects(
     bboxes = [tuple(box) for box in results.boxes.xyxy.cpu().numpy().astype(int)]
     return labels, bboxes
 
-def is_person_dominent(
+def is_single_dominent(
     labels: List[str],
     boxes: List[Tuple[int, int, int, int]],
     image_shape: Tuple[int, int],
-    threshold: float = DEFAULT_PERSON_AREA_THRESHOLD
-) -> Tuple[bool, float]:
+) -> Tuple[bool, float, float]:
     h, w = image_shape
     if h == 0 or w == 0:
-        return False, 0.0
-    
+        return False, 0.0, 0.0
+
     total_area = h * w
+
     person_area = sum(
         (x2 - x1) * (y2 - y1)
         for lbl, (x1, y1, x2, y2) in zip(labels, boxes)
         if lbl == 'person'
     )
+    food_area = sum(
+        (x2 - x1) * (y2 - y1)
+        for lbl, (x1, y1, x2, y2) in zip(labels, boxes)
+        if lbl in TARGET_LABELS and lbl != 'person'
+    )
 
-    ratio = person_area / total_area
-    return ratio > threshold, ratio
+    person_ratio = person_area / total_area
+    food_ratio = food_area / total_area
+
+    dominant = (person_ratio > DEFAULT_PERSON_AREA_THRESHOLD) or (food_ratio > DEFAULT_FOOD_AREA_THRESHOLD)
+
+    return dominant, person_ratio, food_ratio
+
 
 def process_single_image(
     model: YOLO,
     img_path: str,
-    area_threshold: float,
     return_vis: bool
 ) -> Tuple[Dict, np.ndarray, np.ndarray]:
 
@@ -54,13 +63,14 @@ def process_single_image(
         raise FileNotFoundError(f'이미지 로딩 실패: {img_path}')
 
     labels, boxes = detect_objects(model, img)
-    flag, ratio = is_person_dominent(labels, boxes, img.shape[:2], area_threshold)
+    flag, person_ratio, food_ratio = is_single_dominent(labels, boxes, img.shape[:2])
 
-    vis = draw_boxes(img.copy(), boxes) if return_vis else None
+    vis = draw_boxes(img.copy(), boxes, labels) if return_vis else None
 
     result = {
-        'person_dominant': bool(flag),
-        'person_area_ratio': ratio,
+        'single_dominant': bool(flag),
+        'person_area_ratio': person_ratio,
+        'food_area_ratio': food_ratio,
         'pass': bool(not flag)
     }
 
@@ -71,7 +81,6 @@ def process_yolo_filtering(
     output_dir: str,
     model_path: str,
     vis_base_dir: str,
-    area_threshold: float = DEFAULT_PERSON_AREA_THRESHOLD,
     return_vis: bool = True
 ) -> None:
     os.makedirs(output_dir, exist_ok=True)
@@ -101,7 +110,7 @@ def process_yolo_filtering(
             print(f'이미지 없음: {json_path}')
             continue
 
-        result, vis_img, orig_img = process_single_image(model, img_path, area_threshold, return_vis)
+        result, vis_img, orig_img = process_single_image(model, img_path, return_vis)
 
         rec.update(result)
         save_result(rec, json_path)
@@ -122,4 +131,5 @@ def process_yolo_filtering(
             cv2.imwrite(vis_save_path, orig_img)
             print(f'[원본 시각화 저장됨] {vis_save_path}')
 
-        print(f'[결과] 사람 중심 여부: {result['person_dominant']}, 비율: {result['person_area_ratio']:.2%}\n')
+        print(f"[결과] 단일 dominant 여부: {result['single_dominant']}, 사람 비율: {result['person_area_ratio']:.2%}, 음식 비율: {result['food_area_ratio']:.2%}")
+        print()

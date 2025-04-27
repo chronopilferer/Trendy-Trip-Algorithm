@@ -199,3 +199,4 @@ file_structure.py
 *.jpg
 *.png
 hashtag_generator/data
+*.pt

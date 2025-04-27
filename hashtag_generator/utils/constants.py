@@ -16,7 +16,11 @@ DEFAULT_LINE_THICKNESS: int  = 2
 
 # 이미지 영역 임계값 
 DEFAULT_TEXT_AREA_THRESHOLD: float = 0.1
-DEFAULT_PERSON_AREA_THRESHOLD: float = 0.3
+DEFAULT_PERSON_AREA_THRESHOLD: float = 0.2
+DEFAULT_FOOD_AREA_THRESHOLD: float = 0.2
 
 # 이미지 확장자 
 VALID_EXTENSIONS = (".jpg", ".jpeg", ".png", ".bmp")
+
+# YOLO 객체 타겟
+TARGET_LABELS = { 'person', 'bowl', 'cup', 'sandwich', 'cake', 'bottle', 'hot dog', 'donut' }

@@ -3,7 +3,6 @@ import os
 from utils.config import load_config
 from utils.constants import DEFAULT_PERSON_AREA_THRESHOLD, DEFAULT_TEXT_AREA_THRESHOLD
 
-from modules.caption_filter import process_caption_rule_filtering
 from modules.captioning import process_captioning
 from modules.ocr import process_ocr_filtering
 from modules.yolo import process_yolo_filtering
@@ -58,17 +57,8 @@ def main():
         prompt = config['captioning']["prompt"]
     )
 
-    # 6) 5단계: 캡션 룰 필터링 → pass 디렉토리
-    step4_output_dir = os.path.join(output_dir, "step_4")
-    process_caption_rule_filtering(
-        json_dir    = json_dir,
-        output_dir  = step4_output_dir,
-        food_keywords = config['caption_filtering']["food_keywords"],
-        emotion_keywords = config['caption_filtering']["emotion_keywords"]
-    )
-
-    # # 7) 6단계: LLM 필터링 → pass 디렉토리
-    step5_output_dir = os.path.join(output_dir, "step_5")
+    # 6) 5단계: LLM 필터링 → pass 디렉토리
+    step5_output_dir = os.path.join(output_dir, "step_4")
     process_llm_filtering(
         json_dir         = json_dir,
         output_dir       = step5_output_dir,

@@ -5,7 +5,7 @@ path:
   json_dir: "./data/json"
 
 yolo:
-  model_path: "models/yolov8m.pt"
+  model_path: "models/yolo11x.pt"
   return_vis: true
 
 ocr:
@@ -16,14 +16,14 @@ ocr:
 
 captioning:
   model: "Salesforce/instructblip-vicuna-7b"
-  prompt: "Describe the entire scene in detail, including all visible objects and background elements, in a single concise sentence."
+  prompt: "Describe the scene’s atmosphere and key features realistically. Focus on clear, observable elements. Mention emotions only if strongly implied."
 
 LLM:
   model: "google/gemma-3-12b-it"
   prompt_template: >
     Caption: "{caption}"
-    Is this caption detailed and specific enough to be used for generating relevant social media hashtags?
-    Answer in one word only: Suitable or Unsuitable.
+    Does this caption realistically describe the atmosphere or feeling of a place without exaggeration, making it suitable for emotional hashtags?  
+    Answer in one word: Suitable or Unsuitable.
   suitable_keywords: ["suitable"]
   unsuitable_keywords: ["unsuitable"]
   skip_if_judged: true
