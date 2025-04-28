@@ -199,4 +199,5 @@ file_structure.py
 *.jpg
 *.png
 hashtag_generator/data
+hashtag_generator/bk_data
 *.pt

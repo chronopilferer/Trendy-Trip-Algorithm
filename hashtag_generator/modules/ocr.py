@@ -31,7 +31,6 @@ def detect_text(model: easyocr.Reader, image: np.ndarray) -> List[List[Tuple[flo
 def is_text_dominant(
     boxes: List[List[Tuple[float, float]]],
     image_shape: Tuple[int, int],
-    threshold: float = DEFAULT_TEXT_AREA_THRESHOLD
 ) -> Tuple[bool, float]:
     h, w = image_shape
     total_area = h * w
@@ -43,12 +42,11 @@ def is_text_dominant(
         for box in boxes
     )
     ratio = text_area / total_area
-    return ratio > threshold, ratio
+    return ratio > DEFAULT_TEXT_AREA_THRESHOLD, ratio
 
 def process_single_image(
     model: easyocr.Reader,
     img_path: str,
-    area_threshold: float,
     return_vis: bool
 ) -> Tuple[Dict, Union[np.ndarray, None], np.ndarray]:
     img = cv2.imread(img_path)
@@ -56,7 +54,7 @@ def process_single_image(
         raise FileNotFoundError(f'이미지 로딩 실패: {img_path}')
 
     boxes = detect_text(model, img)
-    flag, ratio = is_text_dominant(boxes, img.shape[:2], area_threshold)
+    flag, ratio = is_text_dominant(boxes, img.shape[:2])
     vis = draw_boxes(img.copy(), boxes) if return_vis else None
 
     result = {
@@ -71,7 +69,6 @@ def process_ocr_filtering(
     json_dir: str,
     output_dir: str,
     vis_base_dir: str,
-    area_threshold: float = DEFAULT_TEXT_AREA_THRESHOLD,
     return_vis: bool = True,
     langs: List[str] = ['ko', 'en']
 ) -> None:
@@ -102,7 +99,7 @@ def process_ocr_filtering(
             print(f'[이미지 없음] {json_path}')
             continue
 
-        result, vis_img, orig_img = process_single_image(reader, img_path, area_threshold, return_vis)
+        result, vis_img, orig_img = process_single_image(reader, img_path, return_vis)
 
         rec.update(result)
         save_result(rec, json_path)

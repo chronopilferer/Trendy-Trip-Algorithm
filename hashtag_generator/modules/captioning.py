@@ -2,31 +2,42 @@ import os
 import json
 import torch
 from PIL import Image
-from transformers import InstructBlipProcessor, InstructBlipForConditionalGeneration
+from transformers import AutoProcessor, AutoModelForVision2Seq
 
 from utils.file_io import save_result
 
 def load_img_to_text_model(model_name: str, torch_dtype=torch.float16, device_map: str = "auto"):
     print(f"[Loading Model] {model_name}")
-    processor = InstructBlipProcessor.from_pretrained(model_name)
-    model = InstructBlipForConditionalGeneration.from_pretrained(
+    processor = AutoProcessor.from_pretrained(model_name)
+    model = AutoModelForVision2Seq.from_pretrained(
         model_name,
         torch_dtype=torch_dtype,
         device_map=device_map
     )
     return processor, model
 
+def format_prompt(user_prompt: str) -> str:
+    return f"<|system|>You are a helpful assistant.<|user|><image>{user_prompt}<|assistant|>"
+
 def generate_caption(image_path: str, processor, model, prompt: str, device: torch.device) -> str:
     image = Image.open(image_path).convert("RGB")
-    modified_prompt = prompt.strip() + "\nAnswer:"
-    inputs = processor(images=image, text=modified_prompt, return_tensors="pt")
-    inputs = {key: value.to(device) for key, value in inputs.items()}
+    formatted_prompt = format_prompt(prompt)
+    
+    inputs = processor(text=formatted_prompt, images=image, return_tensors="pt").to(device)
 
-    outputs = model.generate(**inputs, max_new_tokens=256)
-    caption = processor.tokenizer.batch_decode(outputs, skip_special_tokens=True)[0]
+    outputs = model.generate(
+        input_ids=inputs["input_ids"],
+        attention_mask=inputs["attention_mask"],
+        pixel_values=inputs["pixel_values"],
+        max_new_tokens=128,
+        length_penalty=1.0,
+    )
 
-    if caption.startswith(modified_prompt):
-        caption = caption[len(modified_prompt):].strip()
+    caption = processor.batch_decode(outputs, skip_special_tokens=True)[0]
+
+    split_marker = "<|assistant|>"
+    if split_marker in caption:
+        caption = caption.split(split_marker)[-1].strip()
 
     return caption
 

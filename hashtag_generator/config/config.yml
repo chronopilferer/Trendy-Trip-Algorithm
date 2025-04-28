@@ -15,15 +15,15 @@ ocr:
     - "en"
 
 captioning:
-  model: "Salesforce/instructblip-vicuna-7b"
-  prompt: "Describe the scene’s atmosphere and key features realistically. Focus on clear, observable elements. Mention emotions only if strongly implied."
+  model: "llava-hf/llava-1.5-7b-hf"
+  prompt: "Factually describe the objects, materials, and actions that are clearly visible in the image. Use precise and natural sentences."
 
 LLM:
   model: "google/gemma-3-12b-it"
   prompt_template: >
     Caption: "{caption}"
-    Does this caption realistically describe the atmosphere or feeling of a place without exaggeration, making it suitable for emotional hashtags?  
-    Answer in one word: Suitable or Unsuitable.
+    Question: Is this caption realistic and detailed enough to generate accurate image-based hashtags, without any exaggeration or imagination?
+    **Answer with only one word: Suitable or Unsuitable.
   suitable_keywords: ["suitable"]
   unsuitable_keywords: ["unsuitable"]
   skip_if_judged: true
