@@ -8,6 +8,16 @@ yolo:
   model_path: "models/yolo11x.pt"
   return_vis: true
 
+clip:
+  model: "openai/clip-vit-base-patch32"
+  prompts:
+    scene:
+      - "a wide view of an indoor or outdoor place"
+      - "a photo showing an entire environment"
+    object:
+      - "a close-up photo of an object"
+      - "a photo focusing on a single item without background"
+
 ocr:
   return_vis: true
   langs:
@@ -16,14 +26,19 @@ ocr:
 
 captioning:
   model: "llava-hf/llava-1.5-7b-hf"
-  prompt: "Factually describe the objects, materials, and actions that are clearly visible in the image. Use precise and natural sentences."
+  prompt: >
+    Briefly describe: 
+    1) Indoor or Outdoor? 
+    2) Main objects visible. 
+    3) Environment setting. 
+    Use only concise, factual sentences.
 
 LLM:
   model: "google/gemma-3-12b-it"
   prompt_template: >
     Caption: "{caption}"
-    Question: Is this caption realistic and detailed enough to generate accurate image-based hashtags, without any exaggeration or imagination?
-    **Answer with only one word: Suitable or Unsuitable.
+    Is this caption factual and sufficient for hashtag generation?
+    Reply only “Suitable” or “Unsuitable”.
   suitable_keywords: ["suitable"]
   unsuitable_keywords: ["unsuitable"]
   skip_if_judged: true

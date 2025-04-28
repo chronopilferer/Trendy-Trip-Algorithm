@@ -7,6 +7,7 @@ from modules.captioning import process_captioning
 from modules.ocr import process_ocr_filtering
 from modules.yolo import process_yolo_filtering
 from modules.image import process_img_filtering
+from modules.clip import process_clip_filtering
 from modules.llm import process_llm_filtering
 
 def main():
@@ -48,12 +49,21 @@ def main():
     #     return_vis = config["ocr"]['return_vis']
     # )
 
-    # 5) 4단계: 캡션 생성 (이미지 이동 없음, JSON만)
-    process_captioning(
-        json_dir = json_dir,
-        model_name = config['captioning']["model"],
-        prompt = config['captioning']["prompt"]
+    # 5) 4단계: clip 필터링 → pass 디렉토리
+    step4_output_dir = os.path.join(output_dir, "step_4")
+    process_clip_filtering(
+            json_dir = json_dir,
+            out_dir = step4_output_dir,
+            model_name = config["clip"]["model"],
+            prompts = config["clip"]["prompts"]
     )
+
+    # 5) 4단계: 캡션 생성 (이미지 이동 없음, JSON만)
+    # process_captioning(
+    #     json_dir = json_dir,
+    #     model_name = config['captioning']["model"],
+    #     prompt = config['captioning']["prompt"]
+    # )
 
     # 6) 5단계: LLM 필터링 → pass 디렉토리
     step5_output_dir = os.path.join(output_dir, "step_4")
