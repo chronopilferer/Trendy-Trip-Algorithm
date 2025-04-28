@@ -8,22 +8,24 @@ from utils.text import extract_judgement
 
 def load_filtering_model(
     model_id: str,
-    load_in_8bit: bool = True,
-    llm_int8_enable_fp32_cpu_offload: bool = True,
+    load_in_4bit: bool = True,
     device_map: str = "auto",
-    torch_dtype="auto"
+    torch_dtype: torch.dtype = torch.bfloat16
 ):
     print(f"[모델 로딩] {model_id}")
     quant_config = BitsAndBytesConfig(
-        load_in_8bit=load_in_8bit,
-        llm_int8_enable_fp32_cpu_offload=llm_int8_enable_fp32_cpu_offload
+        load_in_4bit=load_in_4bit,
+        bnb_4bit_compute_dtype=torch.bfloat16,
+        bnb_4bit_use_double_quant=True,
+        bnb_4bit_quant_type="nf4"
     )
-    tokenizer = AutoTokenizer.from_pretrained(model_id)
+    tokenizer = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
     model = AutoModelForCausalLM.from_pretrained(
         model_id,
         quantization_config=quant_config,
         device_map=device_map,
-        torch_dtype=torch_dtype
+        torch_dtype=torch_dtype,
+        trust_remote_code=True
     )
     return tokenizer, model
 
@@ -36,21 +38,23 @@ def process_judgement(
     max_new_tokens: int,
     temperature: float,
     top_p: float,
-    suitable_keywords: list,
-    unsuitable_keywords: list
 ) -> tuple:
     prompt = prompt_template.replace("{caption}", caption.strip())
     inputs = tokenizer(prompt, return_tensors="pt")
     inputs = {k: v.to(device) for k, v in inputs.items()}
 
-    outputs = model.generate(
-        **inputs,
-        max_new_tokens=max_new_tokens,
-        temperature=temperature,
-        top_p=top_p,
-    )
+    with torch.no_grad():
+        outputs = model.generate(
+            **inputs,
+            max_new_tokens=max_new_tokens,
+            temperature=temperature,
+            top_p=top_p,
+            early_stopping=True,
+            do_sample=False
+        )
+
     text = tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
-    judgement = extract_judgement(text, prompt, suitable_keywords, unsuitable_keywords)
+    judgement = extract_judgement(text, prompt)
     return judgement, text
 
 def process_llm_filtering(
@@ -61,17 +65,13 @@ def process_llm_filtering(
     max_new_tokens: int,
     temperature: float,
     top_p: float,
-    suitable_keywords: list,
-    unsuitable_keywords: list,
-    load_in_8bit: bool = True,
-    llm_int8_enable_fp32_cpu_offload: bool = True,
+    load_in_4bit: bool = True,
     device_map: str = "auto",
-    torch_dtype: str = "auto"
+    torch_dtype: torch.dtype = torch.bfloat16
 ) -> None:
     tokenizer, model = load_filtering_model(
-        model_id,
-        load_in_8bit=load_in_8bit,
-        llm_int8_enable_fp32_cpu_offload=llm_int8_enable_fp32_cpu_offload,
+        model_id=model_id,
+        load_in_4bit=load_in_4bit,
         device_map=device_map,
         torch_dtype=torch_dtype
     )
@@ -85,10 +85,9 @@ def process_llm_filtering(
     json_files = [f for f in os.listdir(json_dir) if f.lower().endswith(".json")]
 
     for fname in json_files:
-        json_path = os.path.join(json_dir, fname)
-
-        with open(json_path, "r", encoding="utf-8") as jf:
-            rec = json.load(jf)
+        path = os.path.join(json_dir, fname)
+        with open(path, 'r', encoding='utf-8') as f:
+            rec = json.load(f)
 
         if rec.get("pass") is False:
             continue
@@ -97,11 +96,8 @@ def process_llm_filtering(
         img_path = rec.get("filepath", "")
         img_name = rec.get("filename", fname.replace(".json", ".jpg"))
 
-        if not caption:
-            print(f"[⚠️ No Caption] {fname}")
-            continue
-        if not img_path or not os.path.isfile(img_path):
-            print(f"[⚠️ 이미지 없음] {fname}")
+        if not caption or not img_path or not os.path.isfile(img_path):
+            print(f"[⚠️ 스킵됨] {fname} - 누락된 caption/이미지")
             continue
 
         print(f"[처리 중] {fname}")
@@ -115,31 +111,27 @@ def process_llm_filtering(
                 max_new_tokens=max_new_tokens,
                 temperature=temperature,
                 top_p=top_p,
-                suitable_keywords=suitable_keywords,
-                unsuitable_keywords=unsuitable_keywords
             )
 
             rec.update({
                 "judgement": judgement,
                 "LLM_response": response,
-                "pass": bool(judgement == "pass")
+                "pass": (judgement == "pass")
             })
 
-            judgement_dir = 'pass' if rec["pass"] else 'non-pass'
-            json_target_dir = os.path.join(output_dir, judgement_dir)
-            img_target_dir = os.path.join(output_dir, judgement_dir)
+            label = 'pass' if rec["pass"] else 'non-pass'
+            target_dir = os.path.join(output_dir, label)
+            os.makedirs(target_dir, exist_ok=True)
 
-            os.makedirs(json_target_dir, exist_ok=True)
-            os.makedirs(img_target_dir, exist_ok=True)
+            out_json = os.path.join(target_dir, fname)
+            save_result(rec, out_json)
+            print(f"[JSON 저장됨] {out_json}")
 
-            out_json_path = os.path.join(json_target_dir, fname)
-            save_result(rec, out_json_path)
-            print(f"[JSON 저장됨] {out_json_path}")
+            copy_image(img_path, target_dir, label)
+            print(f"[이미지 저장됨] {img_name} → {target_dir}\n")
 
-            copy_image(img_path, img_target_dir, judgement_dir)
-            print(f"[이미지 복사됨] {img_name} → {img_target_dir}")
-
-            print(f"[결과] judgement: {judgement}\n")
-
+        except torch.cuda.OutOfMemoryError as e:
+            print(f"❌ [OOM 오류] {fname} - {e}")
+            torch.cuda.empty_cache()
         except Exception as e:
-            print(f"❌ [에러] {fname} - {str(e)}")
+            print(f"❌ [에러] {fname} - {e}")

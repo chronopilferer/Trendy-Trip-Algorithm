@@ -61,12 +61,10 @@ def main():
         json_dir         = json_dir,
         output_dir       = step5_output_dir,
         model_id         = config['LLM']['model'],
-        prompt_template  = config["LLM"]['prompt_template'],
-        max_new_tokens   = config["LLM"]['max_new_tokens'],
+        prompt_template  = config['LLM']['prompt_template'],
+        max_new_tokens   = config['LLM']['max_new_tokens'],
         temperature      = config['LLM']['temperature'],
         top_p            = config['LLM']['top_p'],
-        suitable_keywords   = config['LLM']["suitable_keywords"],
-        unsuitable_keywords = config['LLM']["unsuitable_keywords"]
     )
 
 if __name__ == "__main__":

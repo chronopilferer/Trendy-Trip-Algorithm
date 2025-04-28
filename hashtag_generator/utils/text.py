@@ -47,18 +47,12 @@ def extract_keywords_from_caption(
         )
     return list(set(all_keywords))
 
-def extract_judgement(
-    response: str,
-    prompt: str,
-    suitable_keywords: list,
-    unsuitable_keywords: list
-) -> str:
-    if response.startswith(prompt):
-        response = response[len(prompt):].strip()
-    for word in response.split():
-        w = word.lower().strip('.,!?"')
-        if w in suitable_keywords:
-            return "Suitable"
-        if w in unsuitable_keywords:
-            return "Unsuitable"
-    return "Unknown"
+def extract_judgement(response: str, prompt: str) -> str:
+    response_clean = response.replace(prompt, '').strip().lower()
+
+    if "suitable" in response_clean:
+        return "pass"
+    elif "unsuitable" in response_clean:
+        return "non-pass"
+    else:
+        return "unknown"
