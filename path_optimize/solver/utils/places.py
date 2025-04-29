@@ -1,11 +1,6 @@
+from typing import List, Optional, Tuple
 
-def validate_first_place(places, expected_category, err_msg):
-    if not places:
-        raise ValueError("places 리스트가 비어있습니다.")
-    
-    first_cat = places[0].get("category")
-    if first_cat != expected_category:
-        raise ValueError(err_msg)
+from utils.types import START_INDEX, END_INDEX, Handler
 
 def split_restaurant_nodes(places, windows_map):
     new_places, new_wins = [], []
@@ -20,7 +15,8 @@ def split_restaurant_nodes(places, windows_map):
                 label = meal or "default"
                 node.update({
                     "name": f"{place['name']} ({label})",
-                    "id": f"{pid}_{label}"
+                    "id": f"{pid}_{label}",
+                    "org_id": pid
                 })
                 new_places.append(node)
                 new_wins.append((o, c, meal))
@@ -29,88 +25,123 @@ def split_restaurant_nodes(places, windows_map):
             new_wins.append(wins[0] if wins else (None, None, None))
     return new_places, new_wins
 
-def is_accommodation(place):
-    return place.get("category") == "accommodation"
+def get_indices_by_category(places: List[dict], category: str) -> List[int]:
+    """ 카테고리에 해당하는 장소의 인덱스 반환 """
+    return [i for i, p in enumerate(places) if p.get("category") == category]
 
-def is_transport(place):
-    return place.get("category") == "transport"
+def validate_place_category(place: dict, expected_category: str, err_msg: str) -> None:
+    """ 카테고리 적합 검사 """
+    if place.get("category") != expected_category:
+        raise ValueError(err_msg)
 
-def validate_non_empty(places):
-    if not places:
-        raise ValueError("places 리스트가 비어있습니다.")
-
-def get_indices_by_category(places, category_check):
-    return [idx for idx, p in enumerate(places) if category_check(p)]
-
-def handle_first_day(places, accommodation_indices):
-    # 시작은 무조건 transport
-    validate_first_place(places, "transport", "여행 첫날 시작 장소는 transport여야 합니다.")
-    start_index = 0
-
-    # accommodation이 하나만 있어야 종료 인덱스로
-    end_index = None
-    if accommodation_indices:
-        if len(accommodation_indices) > 1:
-            raise ValueError("여행 첫날에 accommodation이 2개 이상 있습니다.")
-        end_index = accommodation_indices[0]
-
-    return start_index, end_index
-
-def handle_one_day_trip(places, transport_indices):
-    # 당일치기: 시작은 transport, 종료도 transport(시작 제외)
-    validate_first_place(places, "transport", "당일치기 여행 시작 장소는 transport여야 합니다.")
-    start_index = 0
-
-    other_transports = [i for i in transport_indices if i != 0]
-    if len(other_transports) != 1:
-        raise ValueError("당일치기 여행에는 시작 장소를 제외한 transport가 1개여야 합니다.")
-    end_index = other_transports[0]
-
-    return start_index, end_index
-
-def handle_last_day(places, transport_indices):
-    # 시작은 0번이 accommodation이면 그걸, 아니면 None
-    start_index = 0 if is_accommodation(places[0]) else None
-
-    # 종료는 무조건 transport가 하나
+def handle_first_day(
+    places: List[dict],
+    acc_indices: List[int],
+    transport_indices: List[int]
+) -> Tuple[int, Optional[int]]:
+    """ 
+    첫날의 경우 시작 노드는 반드시 transport 카테고리, 
+    마지막 노드의 경우 숙소 카테고리 만약 없다면 None 반환 
+    """
     if not transport_indices:
-        raise ValueError("여행 마지막날에 transport 장소가 없습니다.")
-    if len(transport_indices) > 1:
-        raise ValueError("여행 마지막날에 transport 장소가 2개 이상 있습니다.")
-    end_index = transport_indices[0]
+        raise ValueError("여행 첫날에 transport 장소가 없습니다.")
+    start = transport_indices[START_INDEX]
+    validate_place_category(places[start], "transport", "여행 첫날 시작 장소는 transport여야 합니다.")
+    
+    if len(acc_indices) > 1:
+        raise ValueError("여행 첫날에 accommodation이 2개 이상 있습니다.")
+    end = acc_indices[START_INDEX] if acc_indices else None
+    
+    return start, end
 
-    return start_index, end_index
+def handle_one_day_trip(
+    places: List[dict],
+    _acc_indices: List[int],
+    transport_indices: List[int]
+) -> Tuple[int, int]:
+    """
+    당일치기 여행의 경우 시작·종료 노드는 반드시 transport 카테고리여야 하며,
+    transport 노드가 정확히 2개여야 한다.
+    """
+    if len(transport_indices) != 2:
+        raise ValueError("당일치기 여행에는 transport 장소가 정확히 2개 있어야 합니다.")
 
-def handle_mid_day(places, accommodation_indices):
-    # 시작은 0번이 accommodation이면, 종료는 마지막이 accommodation이면
-    start_index = 0 if is_accommodation(places[0]) else None
-    end_index   = (len(places) - 1) if is_accommodation(places[-1]) else None
+    start = transport_indices[START_INDEX]
+    end = transport_indices[END_INDEX]
 
-    # 장소가 하나밖에 없으면 시작만 0으로
-    if len(places) == 1:
-        start_index = 0
+    validate_place_category(places[start], "transport", "당일치기 여행 시작 장소는 transport여야 합니다.")
+    validate_place_category(places[end],   "transport", "당일치기 여행 종료 장소는 transport여야 합니다.")
 
-    # accommodation이 너무 많으면 에러
-    if len(accommodation_indices) > 2:
+    return start, end
+
+def handle_last_day(
+    places: List[dict],
+    acc_indices: List[int],
+    transport_indices: List[int]
+) -> Tuple[Optional[int], int]:
+    """
+    마지막 날일 경우 시작 노드의 경우 숙소 카테고리 만약 없다면 None 반환 
+    종료 노드는 transport 카테고리가 정확히 1개여야 하며, 해당 노드를 종료 노드로 설정
+    """
+    if len(acc_indices) > 1:
+        raise ValueError("여행 마지막날에 accommodation이 2개 이상 있습니다.")
+    if len(transport_indices) != 1:
+        raise ValueError("여행 마지막날에 transport 장소가 1개여야 합니다.")
+
+    start = acc_indices[START_INDEX] if acc_indices else None
+    if start is not None:
+        validate_place_category(places[start], "accommodation", "여행 마지막날 시작 장소는 accommodation여야 합니다.")
+
+    end = transport_indices[0]
+    validate_place_category(places[end], "transport", "여행 마지막날 종료 장소는 transport여야 합니다.")
+
+    return start, end
+
+def handle_mid_day(
+    places: List[dict],
+    acc_indices: List[int],
+    _transport_indices: List[int]
+) -> Tuple[Optional[int], Optional[int]]:
+    """
+    중간 날일 경우 accommodation 노드 개수에 따라 분기 
+    2개: 순서에 따라 지정, 1개: 노드 위치가 START_INDEX면 start, END_INDEX면 end 0개: (None, None)
+    """
+    count = len(acc_indices)
+    if count > 2:
         raise ValueError("중간여행일에 accommodation이 3개 이상입니다.")
 
-    return start_index, end_index
+    if count == 2:
+        start, end = acc_indices  
+    elif count == 1:
+        idx = acc_indices[0]
+        start, end = idx, None
+    else:  
+        start, end = None, None
 
-def determine_start_end_indices(places, day_info):
-    # 1. 입력 검사 및 인덱스 추출
-    validate_non_empty(places)
-    accommodation_indices = get_indices_by_category(places, is_accommodation)
-    transport_indices     = get_indices_by_category(places, is_transport)
+    if start is not None:
+        validate_place_category(places[start], "accommodation", "중간날 시작 장소는 accommodation이어야 합니다.")
+    if end is not None:
+        validate_place_category(places[end],   "accommodation", "중간날 종료 장소는 accommodation이어야 합니다.")
 
-    is_first = day_info.get("is_first_day", False)
-    is_last  = day_info.get("is_last_day", False)
+    return start, end
 
-    # 2. 각 케이스별 핸들러 호출
-    if is_first and not is_last:
-        return handle_first_day(places, accommodation_indices)
-    if is_first and is_last:
-        return handle_one_day_trip(places, transport_indices)
-    if not is_first and is_last:
-        return handle_last_day(places, transport_indices)
-    # 그 외 중간 여행일
-    return handle_mid_day(places, accommodation_indices)
+def determine_start_end_indices(
+    places: List[dict], day_info: dict
+) -> Tuple[Optional[int], Optional[int]]:
+    
+    handlers: dict[Tuple[bool, bool], Handler] = {
+        (True, False): handle_first_day,
+        (True, True): handle_one_day_trip,
+        (False, True): handle_last_day,
+        (False, False): handle_mid_day,
+    }
+
+    acc_indices = get_indices_by_category(places, "accommodation")
+    transport_indices = get_indices_by_category(places, "transport")
+
+    key = (day_info.get("is_first_day", False), day_info.get("is_last_day", False))
+    handler = handlers.get(key)
+    
+    if not handler:
+        raise ValueError("유효하지 않은 day_info 조합입니다.")
+    return handler(places, acc_indices, transport_indices)
