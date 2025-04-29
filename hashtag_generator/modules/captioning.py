@@ -3,6 +3,7 @@ import json
 import torch
 from PIL import Image
 from transformers import AutoProcessor, AutoModelForVision2Seq
+import re
 from typing import Tuple
 
 from utils.file_io import save_result, copy_image
@@ -39,18 +40,19 @@ def generate_caption(
     return text
 
 def parse_fine_caption(caption: str) -> Tuple[str, str, str]:
-    indoor_out = place = full_env = None
-    for line in caption.splitlines():
-        line = line.strip()
-        if line.lower().startswith("1"):
-            indoor_out = line.split("?",1)[-1].strip().split()[0]
-        elif line.lower().startswith("2"):
-            place = line.split("?",1)[-1].strip().rstrip(".")
-        elif line.lower().startswith("3"):
-            full_env = line.split("?",1)[-1].strip().split()[0]
+    pattern = r"1\)\s*(.*?)\s*2\)\s*(.*?)\s*3\)\s*(.*)"
+
+    match = re.search(pattern, caption, re.DOTALL)
+    if match:
+        indoor_out = match.group(1).strip()
+        place = match.group(2).strip()
+        full_env = match.group(3).strip()
+    else:
+        indoor_out, place, full_env = None, None, None
+
     return indoor_out, place, full_env
 
-def process_fine_captioning(
+def process_captioning(
     json_dir: str,
     output_dir: str,
     model_name: str,
@@ -70,7 +72,11 @@ def process_fine_captioning(
         json_path = os.path.join(json_dir, fname)
         rec = json.load(open(json_path, encoding="utf-8"))
 
-        if not rec.get("pass", False):
+        if not rec.get('pass', False):
+            continue
+
+        clip_decision = rec.get('clip_decision')
+        if clip_decision is not None and clip_decision not in ("pass", "hold"):
             continue
 
         img_path = rec.get("filepath")

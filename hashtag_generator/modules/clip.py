@@ -51,7 +51,7 @@ def process_clip_filtering(
     prompts
 ):
     os.makedirs(out_dir, exist_ok=True)
-    for d in ("pass", "hold", "fail"):
+    for d in ("pass", "hold", "non-pass"):
         os.makedirs(os.path.join(out_dir, d), exist_ok=True)
 
     proc, mdl, device = load_clip_model(model_name)
@@ -73,10 +73,12 @@ def process_clip_filtering(
         s_score, o_score = classify_scene_object(img_path, prompts, proc, mdl, device)
         rec.update({"scene_score": s_score, "object_score": o_score})
 
-        if s_score >= SCENE_THRESHOLD and (s_score - o_score) >= MARGIN_DELTA:
+        print("scene_score", s_score, "object_score", o_score)
+
+        if s_score <= o_score or o_score >= OBJECT_THRESHOLD:
+            decision = "non-pass"
+        elif s_score - MARGIN_DELTA >= o_score and s_score >= SCENE_THRESHOLD:
             decision = "pass"
-        elif o_score >= OBJECT_THRESHOLD and (o_score - s_score) >= MARGIN_DELTA:
-            decision = "fail"
         else:
             decision = "hold"
 

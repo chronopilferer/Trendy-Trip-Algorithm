@@ -26,6 +26,6 @@ VALID_EXTENSIONS = (".jpg", ".jpeg", ".png", ".bmp")
 TARGET_LABELS = { 'person', 'bowl', 'cup', 'sandwich', 'cake', 'bottle', 'hot dog', 'donut' }
 
 # clip 모델 임계값
-SCENE_THRESHOLD = 0.30  
-OBJECT_THRESHOLD = 0.30
+SCENE_THRESHOLD = 0.2 
+OBJECT_THRESHOLD = 0.25
 MARGIN_DELTA = 0.05

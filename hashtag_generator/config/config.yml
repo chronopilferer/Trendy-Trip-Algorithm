@@ -27,11 +27,16 @@ ocr:
 captioning:
   model: "llava-hf/llava-1.5-7b-hf"
   prompt: >
-    Briefly describe: 
-    1) Indoor or Outdoor? 
-    2) Main objects visible. 
-    3) Environment setting. 
-    Use only concise, factual sentences.
+    You must answer based only on visible elements in the image. Do not guess or imagine.
+
+    Answer strictly in the following format:
+
+    1) Indoor or Outdoor: ("Indoor" or "Outdoor")
+    2) Main objects visible: (List 2-3 main visible objects, separated by commas. Only objects clearly visible. No repetition.)
+    3) Environment setting: (Describe in one short, factual sentence without assumptions.)
+
+    Do not invent or assume any objects or details.
+    Only output the answers exactly as asked.
 
 LLM:
   model: "google/gemma-3-12b-it"
