@@ -1,6 +1,6 @@
 from typing import List, Optional, Tuple
 
-from utils.types import START_INDEX, END_INDEX, Handler
+from solver.utils.types import START_INDEX, END_INDEX, Handler
 
 def split_restaurant_nodes(places, windows_map):
     new_places, new_wins = [], []
