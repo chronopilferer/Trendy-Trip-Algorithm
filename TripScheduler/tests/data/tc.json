@@ -1,0 +1,119 @@
+{
+    "places": [
+      {
+        "id": 8,
+        "name": "빈도롱이가",
+        "x_cord": 126.6211765,
+        "y_cord": 33.2613312,
+        "category": "accommodation",
+        "open_time": "00:00",
+        "close_time": "23:00",
+        "service_time": 20,
+        "tags": ["숙소", "주차", "예약", "무선인터넷"],
+        "휴무일": [],
+        "break_time": [],
+        "is_mandatory": false
+      },
+      {
+        "id": 9,
+        "name": "천지연호텔",
+        "x_cord": 126.5623994,
+        "y_cord": 33.2418919,
+        "category": "accommodation",
+        "open_time": "00:00",
+        "close_time": "23:00",
+        "service_time": 20,
+        "tags": ["숙소", "단체이용", "예약", "무선인터넷", "남녀화장실구분", "대기공간", "포장", "배달", "주차"],
+        "휴무일": [],
+        "break_time": [],
+        "is_mandatory": false
+      },
+      {
+        "id": 10,
+        "name": "흑돼지해물삼합",
+        "x_cord": 126.5703863,
+        "y_cord": 33.2457007,
+        "category": "restaurant",
+        "open_time": "12:00",
+        "close_time": "21:00",
+        "service_time": 60,
+        "tags": ["고기요리", "단체이용", "주차", "무선인터넷", "예약", "남녀화장실구분", "장애인편의시설"],
+        "휴무일": [],
+        "break_time": [],
+        "is_mandatory": false
+      },
+      {
+        "id": 11,
+        "name": "착한갈치",
+        "x_cord": 126.6061121,
+        "y_cord": 33.2398767,
+        "category": "restaurant",
+        "open_time": "09:30",
+        "close_time": "15:00",
+        "service_time": 60,
+        "tags": ["생선요리", "주차", "남녀화장실구분", "포장"],
+        "휴무일": [],
+        "break_time": [],
+        "is_mandatory": false
+      },
+      {
+        "id": 12,
+        "name": "쇠소깍 산물 관광농원",
+        "x_cord": 126.6247054,
+        "y_cord": 33.2578722,
+        "category": "landmark",
+        "open_time": "09:00",
+        "close_time": "18:00",
+        "service_time": 90,
+        "tags": ["관광농원", "남녀화장실구분", "무선인터넷"],
+        "휴무일": [],
+        "break_time": [],
+        "is_mandatory": false
+      },
+      {
+        "id": 13,
+        "name": "서복공원",
+        "x_cord": 126.568919,
+        "y_cord": 33.257821,
+        "category": "landmark",
+        "open_time": "09:00",
+        "close_time": "18:00",
+        "service_time": 90,
+        "tags": ["테마공원", "공원", "역사", "자연"],
+        "휴무일": [],
+        "break_time": [],
+        "is_mandatory": false
+      },
+      {
+        "id": 14,
+        "name": "이중섭거리",
+        "x_cord": 126.5648532,
+        "y_cord": 33.2413549,
+        "category": "landmark",
+        "open_time": "09:00",
+        "close_time": "22:00",
+        "service_time": 90,
+        "tags": ["예술", "거리", "주차", "예약", "무선인터넷", "남녀화장실구분", "발렛파킹", "반려동물동반"],
+        "휴무일": [],
+        "break_time": [],
+        "is_mandatory": false
+      }
+    ],
+    "user": {
+      "start_time": "08:00",
+      "end_time": "21:00",
+      "travel_style": "relaxed",
+      "meal_time_preferences": {
+        "breakfast": ["08:00", "09:00"],
+        "lunch": ["12:00", "13:00"],
+        "dinner": ["18:00", "19:00"]
+      }
+    },
+    "day_info": {
+      "is_first_day": false,
+      "is_last_day": false,
+      "date": "2025-04-10",
+      "weekday": "목요일"
+    }
+  }
+  

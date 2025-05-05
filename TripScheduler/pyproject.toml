@@ -1,0 +1,16 @@
+[project]
+name = "tripscheduler"
+version = "0.1.0"
+description = "여행 경로 최적화 모듈"
+authors = [{ name = "Chrono Pilferer" }]
+dependencies = []
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["tripscheduler"]
+
+[tool.pytest.ini_options]
+pythonpath = "."
