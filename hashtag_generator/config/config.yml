@@ -32,23 +32,21 @@ ocr:
 captioning:
   model: "llava-hf/llava-1.5-7b-hf"
   prompt: >
-    You must answer based only on visible elements in the image. Do not guess or imagine.
+    Describe the place in the image.
 
-    Answer strictly in the following format:
+    Answer in this format:
+    Location type: (Indoor or Outdoor)
+    Key objects: (2-3 visible objects)
+    Scene: (One short sentence about the surroundings)
 
-    1) Indoor or Outdoor: ("Indoor" or "Outdoor")
-    2) Main objects visible: (List 2-3 main visible objects, separated by commas. Only objects clearly visible. No repetition.)
-    3) Environment setting: (Describe in one short, factual sentence without assumptions.)
-
-    Do not invent or assume any objects or details.
-    Only output the answers exactly as asked.
+    Do not imagine or guess.
 
 LLM:
   model: "google/gemma-3-12b-it"
-  prompt_template: >
+  prompt: >
     Caption: "{caption}"
-    Is this caption factual and sufficient for hashtag generation?
-    Reply only “Suitable” or “Unsuitable”.
+    Does this caption clearly describe the place?
+    Answer only: “Suitable” or “Unsuitable”.
   suitable_keywords: ["suitable"]
   unsuitable_keywords: ["unsuitable"]
   skip_if_judged: true

@@ -9,8 +9,8 @@ from modules.ocr import process_ocr_filtering
 from modules.clip import process_clip_filtering
 from modules.compute_stat import process_stat_compute
 from modules.stat_filtering import process_stat_filtering
-# from modules.captioning import process_captioning
-# from modules.llm import process_llm_filtering
+from modules.captioning import process_captioning
+from modules.llm import process_llm_filtering
 
 def setup_logging(level=logging.INFO):
     logging.basicConfig(
@@ -41,30 +41,30 @@ def main():
 
     # 4) 파이프라인 단계 실행
     try:
-        # # 4.1) 이미지 메트릭 계산
-        # logger.info("[1/7] 이미지 메트릭 계산 시작")
-        # process_img_filtering(json_dir=json_dir, data_dir=img_dir)
+        # 4.1) 이미지 메트릭 계산
+        logger.info("[1/7] 이미지 메트릭 계산 시작")
+        process_img_filtering(json_dir=json_dir, data_dir=img_dir)
 
-        # # 4.2) YOLO 객체 검출
-        # logger.info("[2/7] YOLO 객체 검출 시작")
-        # process_yolo_filtering(
-        #     json_dir=json_dir,
-        #     data_dir=img_dir,
-        #     model_path=config["yolo"]["model_path"],
-        # )
+        # 4.2) YOLO 객체 검출
+        logger.info("[2/7] YOLO 객체 검출 시작")
+        process_yolo_filtering(
+            json_dir=json_dir,
+            data_dir=img_dir,
+            model_path=config["yolo"]["model_path"],
+        )
 
-        # # 4.3) OCR 메트릭 계산
-        # logger.info("[3/7] OCR 메트릭 계산 시작")
-        # process_ocr_filtering(json_dir=json_dir, data_dir=img_dir)
+        # 4.3) OCR 메트릭 계산
+        logger.info("[3/7] OCR 메트릭 계산 시작")
+        process_ocr_filtering(json_dir=json_dir, data_dir=img_dir)
 
-        # # 4.4) CLIP 점수 계산
-        # logger.info("[4/7] CLIP 점수 계산 시작")
-        # process_clip_filtering(
-        #     json_dir=json_dir,
-        #     data_dir=img_dir,
-        #     model_name=config["clip"]["model"],
-        #     prompts=config["clip"]["prompts"],
-        # )
+        # 4.4) CLIP 점수 계산
+        logger.info("[4/7] CLIP 점수 계산 시작")
+        process_clip_filtering(
+            json_dir=json_dir,
+            data_dir=img_dir,
+            model_name=config["clip"]["model"],
+            prompts=config["clip"]["prompts"],
+        )
 
         # 4.5) 통계량 계산
         logger.info("[5/7] 통계량 계산 시작")
@@ -88,10 +88,24 @@ def main():
             upper_pct=config.get("filtering", {}).get("upper_pct", 0.95),
         )
 
-        # 4.7) 추후 단계 (주석처리)
-        # logger.info("[7/7] 캡션 생성 및 LLM 필터링 (주석 처리됨)")
-        # process_captioning(...)
-        # process_llm_filtering(...)
+        # 4.7) 캡션 생성
+        logger.info("[7/7] 캡션 생성 및 LLM 필터링")
+        process_captioning(
+            json_dir=json_dir,
+            data_dir=img_dir,
+            output_dir=output_dir,
+            model_name=config["captioning"]["model"],
+            prompts=config["captioning"]["prompt"],
+        )
+
+        # 4.8) LLM 필터링
+        process_llm_filtering(
+            json_dir=json_dir,
+            data_dir=img_dir,
+            output_dir=output_dir,
+            model_name=config["LLM"]["model"],
+            prompts=config["LLM"]["prompt"],
+        )
 
         logger.info("파이프라인 실행 완료")
 
