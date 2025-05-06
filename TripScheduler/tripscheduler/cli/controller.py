@@ -13,7 +13,6 @@ logger = logging.getLogger(__name__)
 def execute_full_pipeline(
     json_path: str,
     use_mock: bool = False,
-    mock_matrix_path: str = None,
     mock_raw_path: str = None
 ):
     """
@@ -39,9 +38,11 @@ def execute_full_pipeline(
         logger.info("▶ 조합 %s 실행", labels)
         try:
             visits, cost, full_path = run_scheduler(
-                sel_places, sel_windows, user, day_info,
+                sel_places,
+                sel_windows,
+                user,
+                day_info,
                 use_mock=use_mock,
-                mock_matrix_path=mock_matrix_path,
                 mock_raw_path=mock_raw_path
             )
             results[sel] = {

@@ -54,39 +54,20 @@ def build_selection_inputs(
     labels = tuple(windows[i][2] for i in sel)
     return sel_places, sel_windows, labels
 
-from tabulate import tabulate
-
 def display_results(
     results: Dict[Tuple[int,...], Any],
     windows: List[Tuple[int,int,Any]]
 ):
     for sel, out in results.items():
         labels = tuple(windows[i][2] for i in sel)
-        print("\n" + "="*80)
-        print(f"Option {labels!r}")
-        print("-"*80)
-
+        print(f"\n=== Option {labels!r} ===")
         if not out or out.get("visits") is None:
-            print("  (해결 불가)\n")
+            print("  (해결 불가)")
             continue
 
-        print(f"  Total cost: {out['cost']}\n")
-
-        table_data = []
+        print(f"  Total cost: {out['cost']}")
         for step in out["visits"]:
-            table_data.append([
-                f"[{step.get('order', '-')}]",
-                step.get('place', '-'),
-                step.get('arrival_str', '-'),
-                step.get('departure_str', '-'),
-                step.get('stay_duration', '-'),
-                step.get('travel_time', '-'),
-                step.get('wait_time', '-'),
-                step.get('delay_time', '-')
-            ])
-
-        headers = ["순서", "장소", "도착", "출발", "체류", "이동시간", "대기시간", "지연시간"]
-        print(tabulate(table_data, headers=headers, tablefmt="fancy_grid", stralign="center"))
+            print("   ", step)
 
         # path = out.get("path", [])
         # if path:

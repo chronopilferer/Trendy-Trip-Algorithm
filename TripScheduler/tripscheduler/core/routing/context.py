@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import List, Tuple, Optional, Any
+from typing import List, Tuple, Optional
 from ortools.constraint_solver import pywrapcp
 
 @dataclass
@@ -12,16 +12,28 @@ class RoutingContext:
     end_idx: int
     global_start: int
     global_end: int
-    raw: List[List[dict]]               
+    path_matrix: List[List[Optional[List[float]]]] = field(default_factory=list)
 
-    mgr: pywrapcp.RoutingIndexManager   = field(init=False)
-    routing: pywrapcp.RoutingModel      = field(init=False)
-    callback_index: int                 = field(init=False)
-    time_dimension: Any                 = field(init=False)
+    routing: pywrapcp.RoutingModel = field(init=False)
+    mgr: pywrapcp.RoutingIndexManager = field(init=False)
+    callback_index: int = field(init=False)
+    time_dimension: pywrapcp.RoutingDimension = field(init=False)
+
+    def attach_routing_components(
+        self,
+        routing: pywrapcp.RoutingModel,
+        mgr: pywrapcp.RoutingIndexManager,
+        callback_index: int,
+        time_dimension: pywrapcp.RoutingDimension,
+    ):
+        self.routing = routing
+        self.mgr = mgr
+        self.callback_index = callback_index
+        self.time_dimension = time_dimension
 
 def build_context(
     places: List[dict],
-    windows: List[Tuple[int,int,Optional[str]]],
+    windows: List[Tuple[int, int, Optional[str]]],
     matrix: List[List[int]],
     service_times: List[int],
     start_idx: int,
@@ -31,8 +43,8 @@ def build_context(
     routing: pywrapcp.RoutingModel,
     mgr: pywrapcp.RoutingIndexManager,
     callback_index: int,
-    time_dimension: Any,
-    raw: List[List[dict]],
+    time_dimension: pywrapcp.RoutingDimension,
+    path_matrix: Optional[List[List[Optional[List[float]]]]] = None,
 ) -> RoutingContext:
     ctx = RoutingContext(
         places=places,
@@ -43,10 +55,7 @@ def build_context(
         end_idx=end_idx,
         global_start=global_start,
         global_end=global_end,
-        raw=raw
+        path_matrix=path_matrix or [],
     )
-    ctx.routing = routing
-    ctx.mgr = mgr
-    ctx.callback_index = callback_index
-    ctx.time_dimension = time_dimension
+    ctx.attach_routing_components(routing, mgr, callback_index, time_dimension)
     return ctx

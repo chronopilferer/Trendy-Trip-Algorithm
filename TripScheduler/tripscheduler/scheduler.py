@@ -24,7 +24,6 @@ def run_scheduler(
     user,
     day_info,
     use_mock: bool,
-    mock_matrix_path: str = None,
     mock_raw_path: str = None
 ):
     logger.info("run_scheduler() 시작")
@@ -35,10 +34,9 @@ def run_scheduler(
     logger.debug("API 키 로드 완료")
 
     # 2) 스냅 & 매트릭스 생성 (time_matrix, raw 응답)
-    time_matrix, raw = prepare_matrices(
+    time_matrix, raw, path_matrix = prepare_matrices(
         places, api_key_id, api_key,
         use_mock=use_mock,
-        mock_matrix_path=mock_matrix_path,
         mock_raw_path=mock_raw_path
     )
     logger.debug(
@@ -92,7 +90,7 @@ def run_scheduler(
             places, windows, time_matrix, svc_times,
             start_idx, end_idx, gs, ge,
             routing, mgr, transit_cb, time_dim,
-            raw=raw
+            path_matrix=path_matrix
         )
         visits, full_path = parse_solution(ctx, solution)
         objective = solution.ObjectiveValue()
