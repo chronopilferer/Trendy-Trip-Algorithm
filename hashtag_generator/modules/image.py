@@ -2,8 +2,6 @@ import os
 import json
 import cv2
 import numpy as np
-from typing import Dict
-
 from utils.constants import (
     MIN_WIDTH,
     MIN_HEIGHT,
@@ -12,95 +10,94 @@ from utils.constants import (
     ENTROPY_THRESHOLD,
     VALID_EXTENSIONS
 )
-from utils.file_io import copy_image, save_result
+from utils.file_io import save_result
 
-def is_too_dark_or_bright(
-    image: np.ndarray,
-    dark_thresh: int = DARKNESS_THRESHOLD,
-    bright_thresh: int = BRIGHTNESS_THRESHOLD
-) -> str:
+def compute_brightness(image: np.ndarray) -> float:
+    """
+    이미지의 HSV V 채널 평균값을 계산하여 밝기 점수로 반환합니다.
+    """
     hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-    brightness = hsv[:, :, 2].mean()
-    if brightness < dark_thresh:
-        return 'too_dark'
-    elif brightness > bright_thresh:
-        return 'too_bright'
-    return 'ok'
+    return float(hsv[:, :, 2].mean())
 
-def is_low_resolution(
+def compute_resolution_metrics(
     image: np.ndarray,
     min_width: int = MIN_WIDTH,
     min_height: int = MIN_HEIGHT
-) -> bool:
+) -> dict:
+    """
+    이미지의 너비, 높이와 기준 대비 해상도 비율을 계산하여 반환합니다.
+    """
     h, w = image.shape[:2]
-    return w < min_width or h < min_height
+    resolution_ratio = min(w / min_width, h / min_height)
+    return {
+        'image_width': int(w),
+        'image_height': int(h),
+        'resolution_ratio': float(resolution_ratio)
+    }
 
-def is_low_entropy(
-    image: np.ndarray,
-    entropy_thresh: float = ENTROPY_THRESHOLD
-) -> bool:
+def compute_entropy(image: np.ndarray) -> float:
+    """
+    그레이스케일 히스토그램 기반 엔트로피를 계산하여 반환합니다.
+    """
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     hist = cv2.calcHist([gray], [0], None, [256], [0, 256])
     hist_norm = hist.ravel() / hist.sum()
-    entropy = -np.sum([p * np.log2(p) for p in hist_norm if p > 0])
-    return entropy < entropy_thresh
+    entropy_value = -np.sum([p * np.log2(p) for p in hist_norm if p > 0])
+    return float(entropy_value)
 
-def process_single_image_filtering(
-    fname: str,
-    fpath: str
-) -> Dict:
+def process_single_image_filtering(fpath: str) -> dict:
+    """
+    단일 이미지에 대해 밝기, 해상도, 엔트로피 점수를 계산하고 레코드로 반환합니다.
+    """
     image = cv2.imread(fpath)
     if image is None:
-        return None
+        raise FileNotFoundError(f'Cannot load image: {fpath}')
 
-    bright_status = is_too_dark_or_bright(image)
-    is_low_res = is_low_resolution(image)
-    is_low_ent = is_low_entropy(image)
+    # 각종 메트릭 계산
+    brightness = compute_brightness(image)
+    resolution = compute_resolution_metrics(image)
+    entropy = compute_entropy(image)
 
-    passed = (bright_status == 'ok') and not is_low_res and not is_low_ent
+    # 기준 대비 통과 여부 판단
+    brightness_ok = (brightness >= DARKNESS_THRESHOLD) and (brightness <= BRIGHTNESS_THRESHOLD)
+    resolution_ok = (resolution['image_width'] >= MIN_WIDTH) and (resolution['image_height'] >= MIN_HEIGHT)
+    entropy_ok = (entropy >= ENTROPY_THRESHOLD)
+    passed = brightness_ok and resolution_ok and entropy_ok
 
-    result = {
-        'filename': fname,
-        'filepath': fpath,
-        'brightness': bright_status,
-        'is_low_resolution': bool(is_low_res),
-        'is_low_entropy': bool(is_low_ent),
-        'pass': bool(passed)
+    # 결과 반환
+    return {
+        'brightness_score': brightness,
+        **resolution,
+        'entropy_score': entropy,
+        'step1_pass': bool(passed)
     }
 
-    return result
+def process_img_filtering(json_dir: str, data_dir: str) -> None:
+    """
+    주어진 이미지 디렉토리를 순회하며 각 이미지별 JSON을 생성/업데이트합니다.
+    모든 메트릭을 하나의 JSON 파일에 누적 저장하며, 별도 복사나 분기는 없습니다.
+    """
+    os.makedirs(json_dir, exist_ok=True)
 
-def process_img_filtering(
-    data_dir: str,
-    output_dir: str,
-    json_dir: str
-) -> None:
-
-    os.makedirs(output_dir, exist_ok=True)
-
-    for label in ['pass', 'non-pass']:
-        os.makedirs(os.path.join(output_dir, label), exist_ok=True)
-
-    results = []
-
-    for img_file in os.listdir(data_dir):
-        img_path = os.path.join(data_dir, img_file)
-        fname = img_file.split('.')[-2]
-
-        if not os.path.isfile(img_path) or not img_file.lower().endswith(VALID_EXTENSIONS):
+    for img_name in os.listdir(data_dir):
+        if not img_name.lower().endswith(VALID_EXTENSIONS):
+            continue
+        img_path = os.path.join(data_dir, img_name)
+        if not os.path.isfile(img_path):
             continue
 
-        result = process_single_image_filtering(img_file, img_path)
-        if result is None:
-            continue
+        fname, _ = os.path.splitext(img_name)
+        json_path = os.path.join(json_dir, f'{fname}.json')
 
-        results.append(result)
+        # 기존 JSON 로드 또는 초기화
+        if os.path.exists(json_path):
+            with open(json_path, 'r', encoding='utf-8') as jf:
+                rec = json.load(jf)
+        else:
+            rec = {'filename': fname, 'filepath': img_path}
 
-        judgement_dir = 'pass' if result['pass'] else 'non-pass'
-
-        copy_image(img_path, output_dir, judgement_dir)
-        json_file = fname + '.json'
-        json_path = os.path.join(json_dir, json_file)
-
-        save_result(result, json_path)
-        print(f'[저장됨] {json_path}')
+        # 필터링 수행 및 JSON 업데이트
+        metrics = process_single_image_filtering(img_path)
+        rec.update(metrics)
+        save_result(rec, json_path)
+        print(f'[Saved] {json_path}')

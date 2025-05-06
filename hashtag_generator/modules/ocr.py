@@ -2,20 +2,27 @@ import os
 import json
 import cv2
 import numpy as np
-from typing import List, Tuple, Dict, Union
 import easyocr
+from typing import List, Tuple
 
-from utils.draw import draw_boxes
-from utils.constants import DEFAULT_TEXT_AREA_THRESHOLD
-from utils.file_io import save_result, copy_image
+from utils.constants import VALID_EXTENSIONS
+from utils.file_io import save_result
 
-def load_ocr_model(langs: List[str] = ['ko', 'en'], gpu: bool = True) -> easyocr.Reader:
+def load_ocr_model(langs: List[str] = ['ko','en'], gpu: bool = True) -> easyocr.Reader:
+    """
+    EasyOCR 리더를 초기화하여 반환합니다.
+    """
     return easyocr.Reader(langs, gpu=gpu)
 
-def detect_text(model: easyocr.Reader, image: np.ndarray) -> List[List[Tuple[float, float]]]:
+def detect_text_boxes(
+    model: easyocr.Reader,
+    image: np.ndarray
+) -> List[List[Tuple[float, float]]]:
+    """
+    이미지에서 검출된 텍스트 박스 좌표 리스트를 반환합니다.
+    """
     results = model.readtext(image)
     boxes: List[List[Tuple[float, float]]] = []
-
     for coords, _, _ in results:
         if len(coords) == 4:
             boxes.append(coords)
@@ -23,101 +30,79 @@ def detect_text(model: easyocr.Reader, image: np.ndarray) -> List[List[Tuple[flo
             xs = [p[0] for p in coords]
             ys = [p[1] for p in coords]
             boxes.append([
-                (min(xs), min(ys)), (max(xs), min(ys)),
-                (max(xs), max(ys)), (min(xs), max(ys))
+                (min(xs), min(ys)),
+                (max(xs), min(ys)),
+                (max(xs), max(ys)),
+                (min(xs), max(ys))
             ])
     return boxes
 
-def is_text_dominant(
+def compute_text_area_ratio(
     boxes: List[List[Tuple[float, float]]],
-    image_shape: Tuple[int, int],
-) -> Tuple[bool, float]:
-    h, w = image_shape
+    image_shape: Tuple[int, int]
+) -> float:
+    """
+    텍스트 박스 면적 합계를 이미지 전체 면적으로 나눈 비율을 반환합니다.
+    """
+    h, w = image_shape[:2]
     total_area = h * w
     if total_area == 0:
-        return False, 0.0
-
+        return 0.0
     text_area = sum(
         cv2.contourArea(np.array([[int(x), int(y)] for x, y in box], np.int32))
         for box in boxes
     )
-    ratio = text_area / total_area
-    return ratio > DEFAULT_TEXT_AREA_THRESHOLD, ratio
+    return float(text_area / total_area)
 
-def process_single_image(
-    model: easyocr.Reader,
-    img_path: str,
-    return_vis: bool
-) -> Tuple[Dict, Union[np.ndarray, None], np.ndarray]:
-    img = cv2.imread(img_path)
-    if img is None:
-        raise FileNotFoundError(f'이미지 로딩 실패: {img_path}')
+def process_single_ocr(
+    fpath: str,
+    reader: easyocr.Reader
+) -> dict:
+    """
+    단일 이미지 파일에 대해 OCR을 수행하고, 텍스트 면적 비율과 박스 개수를 반환합니다.
+    """
+    image = cv2.imread(fpath)
+    if image is None:
+        raise FileNotFoundError(f'Cannot load image: {fpath}')
 
-    boxes = detect_text(model, img)
-    flag, ratio = is_text_dominant(boxes, img.shape[:2])
-    vis = draw_boxes(img.copy(), boxes) if return_vis else None
+    boxes = detect_text_boxes(reader, image)
+    ratio = compute_text_area_ratio(boxes, image.shape)
+    num_boxes = len(boxes)
 
-    result = {
-        'text_dominant': bool(flag),
-        'text_area_ratio': float(ratio),
-        'pass': bool(not flag)  
+    return {
+        'text_area_ratio': ratio,
+        'num_text_boxes': num_boxes
     }
-
-    return result, vis, img
 
 def process_ocr_filtering(
     json_dir: str,
-    output_dir: str,
-    vis_base_dir: str,
-    return_vis: bool = True,
-    langs: List[str] = ['ko', 'en']
+    data_dir: str
 ) -> None:
-    os.makedirs(output_dir, exist_ok=True)
-    os.makedirs(vis_base_dir, exist_ok=True)
+    """
+    데이터 디렉토리의 이미지들을 순회하며 OCR 메트릭을 JSON 파일에 누적 저장합니다.
+    """
+    os.makedirs(json_dir, exist_ok=True)
+    reader = load_ocr_model()
 
-    for label in ['pass', 'non-pass']:
-        os.makedirs(os.path.join(output_dir, label), exist_ok=True)
-        os.makedirs(os.path.join(vis_base_dir, label), exist_ok=True)
-
-    reader = load_ocr_model(langs=langs)
-
-    json_files = [f for f in os.listdir(json_dir) if f.lower().endswith('.json')]
-
-    for fname in json_files:
-        json_path = os.path.join(json_dir, fname)
-
-        with open(json_path, 'r', encoding='utf-8') as jf:
-            rec = json.load(jf)
-
-        img_path = rec.get('filepath')
-        img_name = rec.get('filename')
-
-        if rec.get('pass') is False:
+    for img_name in os.listdir(data_dir):
+        if not img_name.lower().endswith(VALID_EXTENSIONS):
+            continue
+        img_path = os.path.join(data_dir, img_name)
+        if not os.path.isfile(img_path):
             continue
 
-        if not img_path or not os.path.isfile(img_path):
-            print(f'[이미지 없음] {json_path}')
-            continue
+        fname, _ = os.path.splitext(img_name)
+        json_path = os.path.join(json_dir, f'{fname}.json')
 
-        result, vis_img, orig_img = process_single_image(reader, img_path, return_vis)
-
-        rec.update(result)
-        save_result(rec, json_path)
-        print(f'[저장됨] {json_path}')
-
-        judgement_dir = 'pass' if result['pass'] else 'non-pass'
-
-        copy_image(img_path, output_dir, judgement_dir)
-        print(f'[이미지 복사됨] {img_name} → {output_dir}')
-
-        vis_dir = os.path.join(vis_base_dir, judgement_dir)
-        vis_save_path = os.path.join(vis_dir, img_name)
-
-        if return_vis and vis_img is not None:
-            cv2.imwrite(vis_save_path, vis_img.astype(np.uint8))
-            print(f'[시각화 이미지 저장됨] {vis_save_path}')
+        # 기존 JSON 로드 또는 초기화
+        if os.path.exists(json_path):
+            with open(json_path, 'r', encoding='utf-8') as jf:
+                rec = json.load(jf)
         else:
-            cv2.imwrite(vis_save_path, orig_img)
-            print(f'[원본 시각화 저장됨] {vis_save_path}')
+            rec = { 'filename': fname, 'filepath': img_path }
 
-        print(f'[결과] 텍스트 중심 여부: {result['text_dominant']}, 비율: {result['text_area_ratio']:.2%}\n')
+        # OCR 메트릭 계산 및 저장
+        metrics = process_single_ocr(img_path, reader)
+        rec.update(metrics)
+        save_result(rec, json_path)
+        print(f'[Saved] {json_path}')

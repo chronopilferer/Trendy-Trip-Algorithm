@@ -12,11 +12,15 @@ clip:
   model: "openai/clip-vit-base-patch32"
   prompts:
     scene:
-      - "a wide view of an indoor or outdoor place"
-      - "a photo showing an entire environment"
+      - "a wide view of an indoor space"
+      - "a panoramic view of an outdoor environment"
+      - "an entire photo of a public place"
+      - "a wide shot of a library hall"
     object:
-      - "a close-up photo of an object"
-      - "a photo focusing on a single item without background"
+      - "a close-up of a cup on a table"
+      - "a close-up of a product with no background"
+      - "a plate of food"
+      - "a hand holding a small item"
 
 ocr:
   return_vis: true
