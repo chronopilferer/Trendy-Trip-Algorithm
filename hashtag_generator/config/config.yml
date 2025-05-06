@@ -3,6 +3,7 @@ path:
   img_dir: "./data/images_raw"
   output_dir: "./data/output"
   json_dir: "./data/json"
+  statistics_dir: "./data/statistics"
 
 yolo:
   model_path: "models/yolo11x.pt"

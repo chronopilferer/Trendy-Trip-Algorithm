@@ -1,72 +1,102 @@
-import os
+import logging
+from pathlib import Path
 
 from utils.config import load_config
-from utils.constants import DEFAULT_PERSON_AREA_THRESHOLD, DEFAULT_TEXT_AREA_THRESHOLD
 
-from modules.ocr import process_ocr_filtering
-from modules.yolo import process_yolo_filtering
 from modules.image import process_img_filtering
+from modules.yolo import process_yolo_filtering
+from modules.ocr import process_ocr_filtering
 from modules.clip import process_clip_filtering
-from modules.captioning import process_captioning
-from modules.llm import process_llm_filtering
+from modules.compute_stat import process_stat_compute
+from modules.stat_filtering import process_stat_filtering
+# from modules.captioning import process_captioning
+# from modules.llm import process_llm_filtering
+
+def setup_logging(level=logging.INFO):
+    logging.basicConfig(
+        level=level,
+        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    )
+
+def ensure_dirs(*dirs):
+    for d in dirs:
+        Path(d).mkdir(parents=True, exist_ok=True)
 
 def main():
     # 1) 설정 불러오기
     config = load_config("config")
-    raw_img_dir = config['path']["img_dir"]       # 원본 이미지 저장 폴더
-    json_dir = config['path']["json_dir"]      # 단계별 JSON 저장 폴더
-    output_dir = config['path']["output_dir"]    # 결과 저장 폴더
+    img_dir         = Path(config["path"]["img_dir"])
+    json_dir        = Path(config["path"]["json_dir"])
+    output_dir      = Path(config["path"]["output_dir"])
+    stats_dir       = Path(config["path"]["statistics_dir"])
+    filter_dir      = output_dir / "step_7"
 
-    os.makedirs(output_dir, exist_ok=True)
-    os.makedirs(json_dir, exist_ok=True)
+    # 2) 로깅 설정
+    setup_logging()
+    logger = logging.getLogger(__name__)
 
-    # 2) 1단계: 이미지 전처리 필터링 → pass 디렉토리
-    process_img_filtering(
-        json_dir = json_dir,
-        data_dir = raw_img_dir
-    )
+    # 3) 필수 디렉토리 생성
+    ensure_dirs(img_dir, json_dir, output_dir, stats_dir, filter_dir)
+    logger.info("필수 디렉토리 준비 완료")
 
-    # 3) 2단계: YOLO 필터링 → pass 디렉토리
-    process_yolo_filtering(
-        json_dir = json_dir,
-        data_dir = raw_img_dir,
-        model_path = config["yolo"]["model_path"],
-    )
+    # 4) 파이프라인 단계 실행
+    try:
+        # # 4.1) 이미지 메트릭 계산
+        # logger.info("[1/7] 이미지 메트릭 계산 시작")
+        # process_img_filtering(json_dir=json_dir, data_dir=img_dir)
 
-    # 4) 3단계: OCR 필터링 → pass 디렉토리
-    process_ocr_filtering(
-        json_dir = json_dir,
-        data_dir = raw_img_dir,
-    )
+        # # 4.2) YOLO 객체 검출
+        # logger.info("[2/7] YOLO 객체 검출 시작")
+        # process_yolo_filtering(
+        #     json_dir=json_dir,
+        #     data_dir=img_dir,
+        #     model_path=config["yolo"]["model_path"],
+        # )
 
-    # 5) 4단계: clip 필터링 → pass 디렉토리
-    process_clip_filtering(
-            json_dir = json_dir,
-            data_dir = raw_img_dir,
-            model_name = config["clip"]["model"],
-            prompts = config["clip"]["prompts"]
-    )
+        # # 4.3) OCR 메트릭 계산
+        # logger.info("[3/7] OCR 메트릭 계산 시작")
+        # process_ocr_filtering(json_dir=json_dir, data_dir=img_dir)
 
-    # # 5) 5단계: 캡션 생성 및 룰 기반 필터링 
-    # step5_output_dir = os.path.join(output_dir, "step_5")
-    # process_captioning(
-    #     json_dir = json_dir,
-    #     output_dir= step5_output_dir,
-    #     model_name = config['captioning']["model"],
-    #     prompt = config['captioning']["prompt"]
-    # )
+        # # 4.4) CLIP 점수 계산
+        # logger.info("[4/7] CLIP 점수 계산 시작")
+        # process_clip_filtering(
+        #     json_dir=json_dir,
+        #     data_dir=img_dir,
+        #     model_name=config["clip"]["model"],
+        #     prompts=config["clip"]["prompts"],
+        # )
 
-    # # 6) 6단계: LLM 필터링 → pass 디렉토리
-    # step6_output_dir = os.path.join(output_dir, "step_6")
-    # process_llm_filtering(
-    #     json_dir         = json_dir,
-    #     output_dir       = step5_output_dir,
-    #     model_id         = config['LLM']['model'],
-    #     prompt_template  = config['LLM']['prompt_template'],
-    #     max_new_tokens   = config['LLM']['max_new_tokens'],
-    #     temperature      = config['LLM']['temperature'],
-    #     top_p            = config['LLM']['top_p'],
-    # )
+        # 4.5) 통계량 계산
+        logger.info("[5/7] 통계량 계산 시작")
+        stat_fields      = config.get("statistics", {}).get("fields")
+        stat_percentiles = config.get("statistics", {}).get("percentiles")
+        process_stat_compute(
+            json_dir=json_dir,
+            output_dir=stats_dir,
+            fields=stat_fields,
+            percentiles=stat_percentiles,
+        )
+
+        # 4.6) 통계 기반 필터링
+        logger.info("[6/7] 통계 기반 필터링 시작")
+        process_stat_filtering(
+            json_dir=str(json_dir),
+            stats_csv=str(stats_dir / "field_statistics.csv"),
+            output_dir=str(filter_dir),
+            method=config.get("filtering", {}).get("method", "iqr"),
+            lower_pct=config.get("filtering", {}).get("lower_pct", 0.05),
+            upper_pct=config.get("filtering", {}).get("upper_pct", 0.95),
+        )
+
+        # 4.7) 추후 단계 (주석처리)
+        # logger.info("[7/7] 캡션 생성 및 LLM 필터링 (주석 처리됨)")
+        # process_captioning(...)
+        # process_llm_filtering(...)
+
+        logger.info("파이프라인 실행 완료")
+
+    except Exception as e:
+        logger.error(f"파이프라인 실행 중 오류 발생: {e}", exc_info=True)
 
 if __name__ == "__main__":
     main()

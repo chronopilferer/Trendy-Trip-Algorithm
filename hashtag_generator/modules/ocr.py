@@ -1,108 +1,97 @@
-import os
-import json
+import logging
+from pathlib import Path
 import cv2
 import numpy as np
 import easyocr
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 
 from utils.constants import VALID_EXTENSIONS
 from utils.file_io import save_result
+from utils.io import load_record
 
-def load_ocr_model(langs: List[str] = ['ko','en'], gpu: bool = True) -> easyocr.Reader:
+logger = logging.getLogger(__name__)
+
+def load_ocr_model(langs: List[str] = ['ko', 'en'], gpu: bool = True) -> easyocr.Reader:
     """
     EasyOCR 리더를 초기화하여 반환합니다.
     """
-    return easyocr.Reader(langs, gpu=gpu)
+    return easyocr.Reader(lang_list=langs, gpu=gpu)
 
 def detect_text_boxes(
-    model: easyocr.Reader,
+    reader: easyocr.Reader,
     image: np.ndarray
-) -> List[List[Tuple[float, float]]]:
+) -> List[List[Tuple[int, int]]]:
     """
     이미지에서 검출된 텍스트 박스 좌표 리스트를 반환합니다.
     """
-    results = model.readtext(image)
-    boxes: List[List[Tuple[float, float]]] = []
+    results = reader.readtext(image)
+    boxes: List[List[Tuple[int, int]]] = []
     for coords, _, _ in results:
         if len(coords) == 4:
-            boxes.append(coords)
+            pts = [(int(x), int(y)) for x, y in coords]
         else:
             xs = [p[0] for p in coords]
             ys = [p[1] for p in coords]
-            boxes.append([
-                (min(xs), min(ys)),
-                (max(xs), min(ys)),
-                (max(xs), max(ys)),
-                (min(xs), max(ys))
-            ])
+            pts = [
+                (int(min(xs)), int(min(ys))),
+                (int(max(xs)), int(min(ys))),
+                (int(max(xs)), int(max(ys))),
+                (int(min(xs)), int(max(ys)))
+            ]
+        boxes.append(pts)
     return boxes
 
 def compute_text_area_ratio(
-    boxes: List[List[Tuple[float, float]]],
+    boxes: List[List[Tuple[int, int]]],
     image_shape: Tuple[int, int]
 ) -> float:
     """
     텍스트 박스 면적 합계를 이미지 전체 면적으로 나눈 비율을 반환합니다.
     """
-    h, w = image_shape[:2]
-    total_area = h * w
-    if total_area == 0:
-        return 0.0
-    text_area = sum(
-        cv2.contourArea(np.array([[int(x), int(y)] for x, y in box], np.int32))
-        for box in boxes
-    )
+    h, w = image_shape
+    total_area = max(h * w, 1)
+    text_area = 0.0
+    for box in boxes:
+        contour = np.array(box, dtype=np.int32)
+        text_area += cv2.contourArea(contour)
     return float(text_area / total_area)
 
-def process_single_ocr(
-    fpath: str,
-    reader: easyocr.Reader
-) -> dict:
+
+def process_single_ocr(fpath: Path, reader: easyocr.Reader) -> Dict[str, float]:
     """
     단일 이미지 파일에 대해 OCR을 수행하고, 텍스트 면적 비율과 박스 개수를 반환합니다.
     """
-    image = cv2.imread(fpath)
-    if image is None:
-        raise FileNotFoundError(f'Cannot load image: {fpath}')
+    img = cv2.imread(str(fpath))
+    if img is None:
+        raise IOError(f"이미지 로드 실패: {fpath}")
 
-    boxes = detect_text_boxes(reader, image)
-    ratio = compute_text_area_ratio(boxes, image.shape)
-    num_boxes = len(boxes)
-
+    boxes = detect_text_boxes(reader, img)
+    ratio = compute_text_area_ratio(boxes, img.shape[:2])
     return {
         'text_area_ratio': ratio,
-        'num_text_boxes': num_boxes
+        'num_text_boxes': float(len(boxes))
     }
 
-def process_ocr_filtering(
-    json_dir: str,
-    data_dir: str
-) -> None:
+def process_ocr_filtering(json_dir: Path, data_dir: Path) -> None:
     """
-    데이터 디렉토리의 이미지들을 순회하며 OCR 메트릭을 JSON 파일에 누적 저장합니다.
+    이미지 디렉토리를 순회하며 OCR 메트릭을 JSON 파일에 누적 저장합니다.
+    실패 파일은 로깅 후 건너뜁니다.
     """
-    os.makedirs(json_dir, exist_ok=True)
+    json_dir.mkdir(parents=True, exist_ok=True)
     reader = load_ocr_model()
 
-    for img_name in os.listdir(data_dir):
-        if not img_name.lower().endswith(VALID_EXTENSIONS):
+    for img_path in data_dir.iterdir():
+        if img_path.suffix.lower() not in VALID_EXTENSIONS:
             continue
-        img_path = os.path.join(data_dir, img_name)
-        if not os.path.isfile(img_path):
-            continue
+        try:
+            json_path = json_dir / f"{img_path.stem}.json"
+            defaults = {'file_path': str(img_path)}
+            rec = load_record(json_path, defaults)
 
-        fname, _ = os.path.splitext(img_name)
-        json_path = os.path.join(json_dir, f'{fname}.json')
+            metrics = process_single_ocr(img_path, reader)
+            rec.update(metrics)
 
-        # 기존 JSON 로드 또는 초기화
-        if os.path.exists(json_path):
-            with open(json_path, 'r', encoding='utf-8') as jf:
-                rec = json.load(jf)
-        else:
-            rec = { 'filename': fname, 'filepath': img_path }
-
-        # OCR 메트릭 계산 및 저장
-        metrics = process_single_ocr(img_path, reader)
-        rec.update(metrics)
-        save_result(rec, json_path)
-        print(f'[Saved] {json_path}')
+            save_result(rec, str(json_path))
+            logger.info(f"Saved OCR metrics for {img_path.name}")
+        except Exception as e:
+            logger.error(f"Failed OCR processing {img_path.name}: {e}", exc_info=True)

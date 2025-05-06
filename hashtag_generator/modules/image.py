@@ -1,16 +1,14 @@
-import os
-import json
+import logging
+from pathlib import Path
 import cv2
 import numpy as np
-from utils.constants import (
-    MIN_WIDTH,
-    MIN_HEIGHT,
-    DARKNESS_THRESHOLD,
-    BRIGHTNESS_THRESHOLD,
-    ENTROPY_THRESHOLD,
-    VALID_EXTENSIONS
-)
+from typing import Dict
+
+from utils.constants import MIN_WIDTH, MIN_HEIGHT, VALID_EXTENSIONS
 from utils.file_io import save_result
+from utils.io import load_record
+
+logger = logging.getLogger(__name__)
 
 def compute_brightness(image: np.ndarray) -> float:
     """
@@ -23,16 +21,16 @@ def compute_resolution_metrics(
     image: np.ndarray,
     min_width: int = MIN_WIDTH,
     min_height: int = MIN_HEIGHT
-) -> dict:
+) -> Dict[str, float]:
     """
     이미지의 너비, 높이와 기준 대비 해상도 비율을 계산하여 반환합니다.
     """
     h, w = image.shape[:2]
-    resolution_ratio = min(w / min_width, h / min_height)
+    ratio = min(w / min_width, h / min_height)
     return {
-        'image_width': int(w),
-        'image_height': int(h),
-        'resolution_ratio': float(resolution_ratio)
+        'image_width': float(w),
+        'image_height': float(h),
+        'resolution_ratio': float(ratio)
     }
 
 def compute_entropy(image: np.ndarray) -> float:
@@ -45,59 +43,40 @@ def compute_entropy(image: np.ndarray) -> float:
     entropy_value = -np.sum([p * np.log2(p) for p in hist_norm if p > 0])
     return float(entropy_value)
 
-def process_single_image_filtering(fpath: str) -> dict:
+def process_single_image(fpath: Path) -> Dict[str, float]:
     """
-    단일 이미지에 대해 밝기, 해상도, 엔트로피 점수를 계산하고 레코드로 반환합니다.
+    단일 이미지 파일에 대해 여러 메트릭을 계산하여 반환합니다.
     """
-    image = cv2.imread(fpath)
+    image = cv2.imread(str(fpath))
     if image is None:
-        raise FileNotFoundError(f'Cannot load image: {fpath}')
+        raise IOError(f"이미지 로드 실패: {fpath}")
 
-    # 각종 메트릭 계산
-    brightness = compute_brightness(image)
-    resolution = compute_resolution_metrics(image)
-    entropy = compute_entropy(image)
-
-    # 기준 대비 통과 여부 판단
-    brightness_ok = (brightness >= DARKNESS_THRESHOLD) and (brightness <= BRIGHTNESS_THRESHOLD)
-    resolution_ok = (resolution['image_width'] >= MIN_WIDTH) and (resolution['image_height'] >= MIN_HEIGHT)
-    entropy_ok = (entropy >= ENTROPY_THRESHOLD)
-    passed = brightness_ok and resolution_ok and entropy_ok
-
-    # 결과 반환
     return {
-        'brightness_score': brightness,
-        **resolution,
-        'entropy_score': entropy,
-        'step1_pass': bool(passed)
+        'brightness_score': compute_brightness(image),
+        **compute_resolution_metrics(image),
+        'entropy_score': compute_entropy(image),
     }
 
-def process_img_filtering(json_dir: str, data_dir: str) -> None:
+def process_img_filtering(json_dir: Path, data_dir: Path) -> None:
     """
-    주어진 이미지 디렉토리를 순회하며 각 이미지별 JSON을 생성/업데이트합니다.
-    모든 메트릭을 하나의 JSON 파일에 누적 저장하며, 별도 복사나 분기는 없습니다.
+    이미지 디렉토리를 순회하며 JSON 파일을 생성/업데이트합니다.
+    각 이미지에 대해 메트릭을 계산해 누적 저장하고, 실패 시 로깅 후 건너뜁니다.
     """
-    os.makedirs(json_dir, exist_ok=True)
+    json_dir.mkdir(parents=True, exist_ok=True)
 
-    for img_name in os.listdir(data_dir):
-        if not img_name.lower().endswith(VALID_EXTENSIONS):
+    for img_path in data_dir.iterdir():
+        if not img_path.suffix.lower() in VALID_EXTENSIONS:
             continue
-        img_path = os.path.join(data_dir, img_name)
-        if not os.path.isfile(img_path):
-            continue
+        try:
+            json_path = json_dir / f"{img_path.stem}.json"
+            defaults = {'file_path': str(img_path)}
+            rec = load_record(json_path, defaults=defaults)
 
-        fname, _ = os.path.splitext(img_name)
-        json_path = os.path.join(json_dir, f'{fname}.json')
+            metrics = process_single_image(img_path)
+            rec.update(metrics)
 
-        # 기존 JSON 로드 또는 초기화
-        if os.path.exists(json_path):
-            with open(json_path, 'r', encoding='utf-8') as jf:
-                rec = json.load(jf)
-        else:
-            rec = {'filename': fname, 'filepath': img_path}
+            save_result(rec, str(json_path))
+            logger.info(f"Saved metrics for {img_path.name}")
 
-        # 필터링 수행 및 JSON 업데이트
-        metrics = process_single_image_filtering(img_path)
-        rec.update(metrics)
-        save_result(rec, json_path)
-        print(f'[Saved] {json_path}')
+        except Exception as e:
+            logger.error(f"Failed processing {img_path.name}: {e}", exc_info=True)
