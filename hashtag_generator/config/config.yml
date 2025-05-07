@@ -1,6 +1,8 @@
 path:
   data_dir: "./data"
-  img_dir: "./data/images_raw"
+  cafe_img_dir: "./data/cafe"
+  restaurant_img_dir: "./data/restaurant"
+  attraction_img_dir: "./data/attraction"
   output_dir: "./data/output"
   json_dir: "./data/json"
   statistics_dir: "./data/statistics"
