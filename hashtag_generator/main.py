@@ -88,24 +88,24 @@ def main():
             upper_pct=config.get("filtering", {}).get("upper_pct", 0.95),
         )
 
-        # 4.7) 캡션 생성
-        logger.info("[7/7] 캡션 생성 및 LLM 필터링")
-        process_captioning(
-            json_dir=json_dir,
-            data_dir=img_dir,
-            output_dir=output_dir,
-            model_name=config["captioning"]["model"],
-            prompts=config["captioning"]["prompt"],
-        )
+        # # 4.7) 캡션 생성
+        # logger.info("[7/7] 캡션 생성 및 LLM 필터링")
+        # process_captioning(
+        #     json_dir=json_dir,
+        #     data_dir=img_dir,
+        #     output_dir=output_dir,
+        #     model_name=config["captioning"]["model"],
+        #     prompts=config["captioning"]["prompt"],
+        # )
 
-        # 4.8) LLM 필터링
-        process_llm_filtering(
-            json_dir=json_dir,
-            data_dir=img_dir,
-            output_dir=output_dir,
-            model_name=config["LLM"]["model"],
-            prompts=config["LLM"]["prompt"],
-        )
+        # # 4.8) LLM 필터링
+        # process_llm_filtering(
+        #     json_dir=json_dir,
+        #     data_dir=img_dir,
+        #     output_dir=output_dir,
+        #     model_name=config["LLM"]["model"],
+        #     prompts=config["LLM"]["prompt"],
+        # )
 
         logger.info("파이프라인 실행 완료")
 

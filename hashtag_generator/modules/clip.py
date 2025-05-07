@@ -100,6 +100,7 @@ def process_clip_filtering(
         try:
             json_path = json_dir / f"{img_path.stem}.json"
             rec = load_record(json_path, defaults={"file_path": str(img_path)})
+            rec["file_name"] = img_path.stem
 
             metrics = classify_scene_object(img_path, prompts, processor, model, device)
             rec.update(metrics)

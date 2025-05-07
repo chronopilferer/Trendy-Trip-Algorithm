@@ -1,6 +1,5 @@
 import logging
 from pathlib import Path
-import json
 from typing import List, Optional
 
 import pandas as pd
@@ -27,6 +26,12 @@ def compute_field_statistics(
     if df.empty:
         logger.warning("통계 계산 대상 데이터가 없습니다.")
         return pd.DataFrame()
+
+    if "file_name" not in df.columns:
+        logger.error("file_name 필드가 records에 존재하지 않습니다.")
+        return pd.DataFrame()
+    
+    df.set_index("file_name", inplace=True)
 
     if percentiles is None:
         percentiles = DEFAULT_PERCENTILES

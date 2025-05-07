@@ -39,8 +39,8 @@ def make_threshold_rules(
         if method == "iqr":
             low, high = row["IQR_low"], row["IQR_high"]
         elif method == "percentile":
-            low = row.get(f"percentile_{int(lower_pct*100)}")
-            high = row.get(f"percentile_{int(upper_pct*100)}")
+            low = row.get(f"percentile_{int(lower_pct*100)}", row.get("min"))
+            high = row.get(f"percentile_{int(upper_pct*100)}", row.get("max"))
         elif method == "zscore":
             mean, std = row["mean"], row["std"]
             low, high = mean - 3 * std, mean + 3 * std
@@ -58,7 +58,7 @@ def process_stat_filtering(
     upper_pct: float = 0.95,
 ) -> None:
     """
-    특성‑맞춤 임계값 필터링
+    특성-맞춤 임계값 필터링
     """
     json_dir = Path(json_dir)
     stats_csv = Path(stats_csv)
@@ -88,6 +88,10 @@ def process_stat_filtering(
 
     # 3) DataFrame 변환 및 flag 계산
     df = pd.DataFrame(records)
+    if "file_name" not in df.columns:
+        logger.error("file_name 필드가 존재하지 않습니다.")
+        return
+    df.set_index("file_name", inplace=True)
 
     for feature, bounds in rules.items():
         direction = FIELD_DIRECTIONS.get(feature, "both")
@@ -95,31 +99,31 @@ def process_stat_filtering(
         series = pd.to_numeric(df.get(feature, []), errors="coerce")
 
         flag_col = f"{feature}_flag"
-        df[flag_col] = True  # 기본 통과
+        df[flag_col] = True
 
         if direction in ("both", "low"):
             df.loc[series < low, flag_col] = False
         if direction in ("both", "high"):
             df.loc[series > high, flag_col] = False
 
-    # 모든 flag AND 연산
     df["final_decision"] = df[[c for c in df.columns if c.endswith("_flag")]].all(axis=1)
 
     # 4) 개별 JSON 업데이트 및 파일 정리
     for json_path in json_dir.glob("*.json"):
         try:
             rec: Dict[str, Any] = load_record(json_path, defaults={})
-            rec_id = Path(rec.get("file_path", "")).stem  # 파일명 기준 매칭
-            row = df.loc[df.index == rec_id]
-            if row.empty:
+            rec_id = rec.get("file_name")
+            if not rec_id:
+                logger.warning(f"file_name 누락: {json_path.name}")
+                continue
+            # DataFrame에서 해당 인덱스 행 조회
+            if rec_id not in df.index:
                 logger.warning(f"통계 기록 없음: {rec_id}")
                 continue
-            row = row.iloc[0]
+            row = df.loc[rec_id]
 
             # flags 저장
-            rec["flags"] = {
-                f: bool(row[f"{f}_flag"]) for f in rules.keys()
-            }
+            rec["flags"] = {f: bool(row[f"{f}_flag"]) for f in rules.keys()}
             rec["pass"] = bool(row["final_decision"])
 
             # JSON 저장

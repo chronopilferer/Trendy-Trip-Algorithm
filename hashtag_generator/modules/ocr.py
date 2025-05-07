@@ -87,6 +87,8 @@ def process_ocr_filtering(json_dir: Path, data_dir: Path) -> None:
             json_path = json_dir / f"{img_path.stem}.json"
             defaults = {'file_path': str(img_path)}
             rec = load_record(json_path, defaults)
+            if "file_name" not in rec:
+                rec["file_name"] = img_path.stem
 
             metrics = process_single_ocr(img_path, reader)
             rec.update(metrics)

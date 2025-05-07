@@ -75,6 +75,8 @@ def process_yolo_filtering(
             json_path = json_dir / f"{img_path.stem}.json"
             defaults = {'file_path': str(img_path)}
             rec = load_record(json_path, defaults)
+            if "file_name" not in rec:
+                rec["file_name"] = img_path.stem
 
             # 이미지 로드
             img = cv2.imread(str(img_path))
