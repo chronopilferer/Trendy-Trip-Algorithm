@@ -128,13 +128,15 @@ def process_stat_filtering(
 
             # JSON 저장
             target_dir = pass_dir if rec["pass"] else nonpass_dir
-            out_json = target_dir / f"{rec_id}.json"
+            out_json_dir = target_dir / 'json'
+            out_json_dir.mkdir(parents=True, exist_ok=True)
+            out_json = target_dir / 'json' / f"{rec_id}.json"
             save_result(rec, str(out_json))
 
             # 이미지 복사
             img_path = rec.get("file_path")
             if img_path and Path(img_path).exists():
-                copy_image(img_path, str(target_dir), rec_id)
+                copy_image(img_path, '.', target_dir)
             else:
                 logger.warning(f"이미지 경로 유효하지 않음: {rec_id}")
 

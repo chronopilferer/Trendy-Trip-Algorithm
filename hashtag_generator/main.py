@@ -41,41 +41,41 @@ def main():
 
     # 4) 파이프라인 단계 실행
     try:
-        # 4.1) 이미지 메트릭 계산
-        logger.info("[1/7] 이미지 메트릭 계산 시작")
-        process_img_filtering(json_dir=json_dir, data_dir=img_dir)
+        # # 4.1) 이미지 메트릭 계산
+        # logger.info("[1/7] 이미지 메트릭 계산 시작")
+        # process_img_filtering(json_dir=json_dir, data_dir=img_dir)
 
-        # 4.2) YOLO 객체 검출
-        logger.info("[2/7] YOLO 객체 검출 시작")
-        process_yolo_filtering(
-            json_dir=json_dir,
-            data_dir=img_dir,
-            model_path=config["yolo"]["model_path"],
-        )
+        # # 4.2) YOLO 객체 검출
+        # logger.info("[2/7] YOLO 객체 검출 시작")
+        # process_yolo_filtering(
+        #     json_dir=json_dir,
+        #     data_dir=img_dir,
+        #     model_path=config["yolo"]["model_path"],
+        # )
 
-        # 4.3) OCR 메트릭 계산
-        logger.info("[3/7] OCR 메트릭 계산 시작")
-        process_ocr_filtering(json_dir=json_dir, data_dir=img_dir)
+        # # 4.3) OCR 메트릭 계산
+        # logger.info("[3/7] OCR 메트릭 계산 시작")
+        # process_ocr_filtering(json_dir=json_dir, data_dir=img_dir)
 
-        # 4.4) CLIP 점수 계산
-        logger.info("[4/7] CLIP 점수 계산 시작")
-        process_clip_filtering(
-            json_dir=json_dir,
-            data_dir=img_dir,
-            model_name=config["clip"]["model"],
-            prompts=config["clip"]["prompts"],
-        )
+        # # 4.4) CLIP 점수 계산
+        # logger.info("[4/7] CLIP 점수 계산 시작")
+        # process_clip_filtering(
+        #     json_dir=json_dir,
+        #     data_dir=img_dir,
+        #     model_name=config["clip"]["model"],
+        #     prompts=config["clip"]["prompts"],
+        # )
 
-        # 4.5) 통계량 계산
-        logger.info("[5/7] 통계량 계산 시작")
-        stat_fields      = config.get("statistics", {}).get("fields")
-        stat_percentiles = config.get("statistics", {}).get("percentiles")
-        process_stat_compute(
-            json_dir=json_dir,
-            output_dir=stats_dir,
-            fields=stat_fields,
-            percentiles=stat_percentiles,
-        )
+        # # 4.5) 통계량 계산
+        # logger.info("[5/7] 통계량 계산 시작")
+        # stat_fields      = config.get("statistics", {}).get("fields")
+        # stat_percentiles = config.get("statistics", {}).get("percentiles")
+        # process_stat_compute(
+        #     json_dir=json_dir,
+        #     output_dir=stats_dir,
+        #     fields=stat_fields,
+        #     percentiles=stat_percentiles,
+        # )
 
         # 4.6) 통계 기반 필터링
         logger.info("[6/7] 통계 기반 필터링 시작")
