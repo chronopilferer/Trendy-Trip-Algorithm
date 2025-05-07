@@ -66,16 +66,16 @@ def main():
         #     prompts=config["clip"]["prompts"],
         # )
 
-        # # 4.5) 통계량 계산
-        # logger.info("[5/7] 통계량 계산 시작")
-        # stat_fields      = config.get("statistics", {}).get("fields")
-        # stat_percentiles = config.get("statistics", {}).get("percentiles")
-        # process_stat_compute(
-        #     json_dir=json_dir,
-        #     output_dir=stats_dir,
-        #     fields=stat_fields,
-        #     percentiles=stat_percentiles,
-        # )
+        # 4.5) 통계량 계산
+        logger.info("[5/7] 통계량 계산 시작")
+        stat_fields      = config.get("statistics", {}).get("fields")
+        stat_percentiles = config.get("statistics", {}).get("percentiles")
+        process_stat_compute(
+            json_dir=json_dir,
+            output_dir=stats_dir,
+            fields=stat_fields,
+            percentiles=stat_percentiles,
+        )
 
         # 4.6) 통계 기반 필터링
         logger.info("[6/7] 통계 기반 필터링 시작")
@@ -83,9 +83,6 @@ def main():
             json_dir=str(json_dir),
             stats_csv=str(stats_dir / "field_statistics.csv"),
             output_dir=str(filter_dir),
-            method=config.get("filtering", {}).get("method", "iqr"),
-            lower_pct=config.get("filtering", {}).get("lower_pct", 0.05),
-            upper_pct=config.get("filtering", {}).get("upper_pct", 0.95),
         )
 
         # # 4.7) 캡션 생성
