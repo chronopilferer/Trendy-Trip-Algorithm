@@ -10,47 +10,40 @@ logger = logging.getLogger(__name__)
 
 from utils.constants import (
     DARKNESS_THRESHOLD, BRIGHTNESS_THRESHOLD,
-    ENTROPY_THRESHOLD, DEFAULT_TEXT_AREA_THRESHOLD, 
-    DEFAULT_PERSON_AREA_THRESHOLD, DEFAULT_FOOD_AREA_THRESHOLD, 
+    ENTROPY_THRESHOLD, DEFAULT_TEXT_AREA_THRESHOLD,
+    DEFAULT_PERSON_AREA_THRESHOLD, DEFAULT_FOOD_AREA_THRESHOLD,
     SCENE_THRESHOLD, OBJECT_THRESHOLD
 )
 
 BASE_POLICY: Dict[str, Dict[str, Any]] = {
     "brightness_score": {
-        "method": "percentile", "direction": "both",
-        "lower_pct": 0.10, "upper_pct": 0.90,
+        "method": "absolute", "direction": "both",
         "absolute_min": DARKNESS_THRESHOLD,
         "absolute_max": BRIGHTNESS_THRESHOLD
     },
     "entropy_score": {
-        "method": "percentile", "direction": "low",
-        "lower_pct": 0.20,
+        "method": "absolute", "direction": "low",
         "absolute_min": ENTROPY_THRESHOLD
     },
     "person_area_ratio": {
-        "method": "percentile", "direction": "high",
-        "upper_pct": 0.90,
+        "method": "absolute", "direction": "high",
         "absolute_max": DEFAULT_PERSON_AREA_THRESHOLD
     },
     "food_area_ratio": {
-        "method": "percentile", "direction": "high",
-        "upper_pct": 0.90,
+        "method": "absolute", "direction": "high",
         "absolute_max": DEFAULT_FOOD_AREA_THRESHOLD
     },
     "text_area_ratio": {
-        "method": "percentile", "direction": "high",
-        "upper_pct": 0.90,
+        "method": "absolute", "direction": "high",
         "absolute_max": DEFAULT_TEXT_AREA_THRESHOLD
     },
     "scene_max": {
-        "method": "percentile", "direction": "low",
-        "lower_pct": 0.30,
+        "method": "absolute", "direction": "low",
         "absolute_min": SCENE_THRESHOLD
     },
     "object_max": {
-        "method": "percentile", "direction": "low",
-        "lower_pct": 0.30,
-        "absolute_min": OBJECT_THRESHOLD
+        "method": "absolute", "direction": "high",
+        "absolute_max": OBJECT_THRESHOLD
     },
     "gap_avg": {
         "method": "zscore", "direction": "both",
@@ -100,6 +93,13 @@ def make_threshold_rules(
             rules[field] = {"low": None, "high": float(strat["threshold"])}
             continue
 
+        if m == "absolute":
+            low  = strat.get("absolute_min", -float("inf"))
+            high = strat.get("absolute_max", float("inf"))
+            rules[field] = {"low": float(low), "high": float(high)}
+            continue
+
+        # 그 외 percentile, iqr, zscore
         row = stats_map.loc[field]
         low  = strat.get("absolute_min", -float("inf"))
         high = strat.get("absolute_max", float("inf"))
