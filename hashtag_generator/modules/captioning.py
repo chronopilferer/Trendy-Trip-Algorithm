@@ -65,13 +65,28 @@ def process_captioning(
             logger.warning(f"[이미지 없음] {json_path}")
             continue
 
-        logger.info(f"[캡션 생성 중] {fname}")
-        raw_caption, caption = generate_caption(img_path, processor, model, prompt, device)
+        raw_caption, caption = "", ""
+        for attempt in range(2):
+            logger.info(f"[캡션 생성 중] {fname} (시도 {attempt+1})")
+            try:
+                with torch.no_grad():
+                    raw_caption, caption = generate_caption(
+                        img_path, processor, model, prompt, device
+                    )
+            except Exception as e:
+                logger.error(f"[캡션 생성 실패] {fname} 시도 {attempt+1}: {e}", exc_info=True)
+                torch.cuda.empty_cache()
+                continue
+
+            if raw_caption.strip() and caption.strip():
+                break
+            else:
+                logger.warning(f"[빈 캡션] {fname} 시도 {attempt+1}에서 캡션이 비어있음, 재시도합니다.")
+                torch.cuda.empty_cache()
 
         rec.update({
             "caption": caption,
             "raw_caption": raw_caption
         })
-
         save_result(rec, json_path)
         logger.debug(f"[저장 완료] {json_path}")
