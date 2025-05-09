@@ -159,9 +159,8 @@ def process_stat_filtering(
 
     df_full["final_decision"] = df_full.filter(like="_flag").all(axis=1)
 
-    subdir   = Path(output_dir) / "filtered_results"
-    pass_dir = subdir / "pass"
-    non_dir  = subdir / "non-pass"
+    pass_dir = Path(output_dir) / "pass"
+    non_dir  = Path(output_dir) / "non-pass"
     for d in (pass_dir, non_dir):
         (d / "json").mkdir(parents=True, exist_ok=True)
 
@@ -180,4 +179,4 @@ def process_stat_filtering(
         if img and Path(img).exists():
             copy_image(img, ".", tgt)
 
-    logger.info("필터링 완료 ▶ %s", subdir)
+    logger.info("필터링 완료 ▶ ")
