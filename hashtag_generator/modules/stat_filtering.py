@@ -162,7 +162,7 @@ def process_stat_filtering(
     pass_dir = Path(output_dir) / "pass"
     non_dir  = Path(output_dir) / "non-pass"
     for d in (pass_dir, non_dir):
-        (d / "json").mkdir(parents=True, exist_ok=True)
+        d.mkdir(parents=True, exist_ok=True)
 
     for jp in json_dir.glob("*.json"):
         rec = load_record(jp, defaults={})
@@ -172,11 +172,12 @@ def process_stat_filtering(
         row = df_full.loc[fid]
         rec["flags"] = {f: bool(row[f + "_flag"]) for f in strategy}
         rec["pass"]  = bool(row["final_decision"])
-        tgt = pass_dir if rec["pass"] else non_dir
-        save_result(rec, tgt / "json" / f"{fid}.json")
+
+        save_result(rec, jp)
 
         img = rec.get("file_path")
+        tgt = pass_dir if rec["pass"] else non_dir
         if img and Path(img).exists():
-            copy_image(img, ".", tgt)
+            copy_image(img, str(img), str(tgt))
 
     logger.info("필터링 완료 ▶ ")

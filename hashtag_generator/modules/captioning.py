@@ -1,12 +1,14 @@
 import os
 import json
+import logging
 import torch
 from PIL import Image
 from transformers import AutoProcessor, AutoModelForVision2Seq
-import re
 from typing import Tuple
 
-from utils.file_io import save_result, copy_image
+from utils.file_io import save_result
+
+logger = logging.getLogger(__name__)
 
 def load_img_to_text_model(model_name: str, torch_dtype=torch.float16, device_map="auto"):
     processor = AutoProcessor.from_pretrained(model_name)
@@ -23,7 +25,7 @@ def generate_caption(
     model,
     prompt: str,
     device: torch.device
-) -> str:
+) -> Tuple[str, str]:
     img = Image.open(image_path).convert("RGB")
     formatted = f"<|system|>You are a helpful assistant.<|user|><image>{prompt}<|assistant|>"
     inputs = processor(text=formatted, images=img, return_tensors="pt").to(device)
@@ -36,40 +38,34 @@ def generate_caption(
     )
     raw_text = processor.batch_decode(outputs, skip_special_tokens=True)[0]
     if "<|assistant|>" in raw_text:
-        text = text.split("<|assistant|>")[-1].strip()
-    return raw_text, text
+        raw_text = raw_text.split("<|assistant|>")[-1].strip()
+    return raw_text, raw_text
 
 def process_captioning(
     json_dir: str,
-    output_dir: str,
-    model_name: str,
-    prompt: str
+    processor,
+    model,
+    prompt: str,
+    device: torch.device
 ):
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    processor, model = load_img_to_text_model(model_name)
-
-    os.makedirs(output_dir, exist_ok=True)
-    for label in ("pass", "hold", "non-pass"):
-        os.makedirs(os.path.join(output_dir, label), exist_ok=True)
-
     for fname in os.listdir(json_dir):
         if not fname.lower().endswith(".json"):
             continue
 
-        print(f'caption {fname}')
-
         json_path = os.path.join(json_dir, fname)
-        rec = json.load(open(json_path, encoding="utf-8"))
-
-        clip_decision = rec.get('clip_decision')
-        if clip_decision is not None and clip_decision not in ("pass", "hold"):
+        try:
+            with open(json_path, encoding="utf-8") as f:
+                rec = json.load(f)
+        except Exception as e:
+            logger.error(f"[JSON 로드 실패] {json_path}: {e}")
             continue
 
         img_path = rec.get("file_path")
         if not img_path or not os.path.isfile(img_path):
-            print(f"[이미지 없음] {json_path}")
+            logger.warning(f"[이미지 없음] {json_path}")
             continue
 
+        logger.info(f"[캡션 생성 중] {fname}")
         raw_caption, caption = generate_caption(img_path, processor, model, prompt, device)
 
         rec.update({
@@ -78,3 +74,4 @@ def process_captioning(
         })
 
         save_result(rec, json_path)
+        logger.debug(f"[저장 완료] {json_path}")
