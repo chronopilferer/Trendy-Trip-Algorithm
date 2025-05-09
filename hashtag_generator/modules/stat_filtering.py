@@ -178,6 +178,6 @@ def process_stat_filtering(
         img = rec.get("file_path")
         tgt = pass_dir if rec["pass"] else non_dir
         if img and Path(img).exists():
-            copy_image(img, str(img), str(tgt))
+            copy_image(img, '.', str(tgt))
 
     logger.info("필터링 완료 ▶ ")
