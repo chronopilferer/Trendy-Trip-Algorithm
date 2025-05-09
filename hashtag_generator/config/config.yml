@@ -34,9 +34,7 @@ ocr:
 captioning:
   model: "llava-hf/llava-1.5-7b-hf"
   prompt: >
-    Describe the image.
-
-    Do not imagine or guess.
+    Describe only what is clearly visible in the image. No guessing.
 
 LLM:
   model: "google/gemma-3-12b-it"

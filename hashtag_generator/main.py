@@ -29,8 +29,10 @@ def main():
     config = load_config("config")
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    processor, model = load_img_to_text_model(config["captioning"]["model"])
-    model.to(device)
+    processor, model = load_img_to_text_model(
+        config["captioning"]["model"],
+        device=device
+    )
 
     categories = ['cafe_img_dir', 'restaurant_img_dir', 'attraction_img_dir']
 
@@ -103,9 +105,9 @@ def main():
                 processor=processor,
                 model=model,
                 prompt=config["captioning"]["prompt"],
-                device=device
+                device=device,
             )
-
+            
             # # 4.8) LLM 필터링
             # process_llm_filtering(
             #     json_dir=json_dir,
