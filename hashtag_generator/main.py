@@ -82,23 +82,22 @@ def main():
             #     percentiles=stat_percentiles,
             # )
 
-            # 4.6) 통계 기반 필터링
-            logger.info("[6/7] 통계 기반 필터링 시작")
-            process_stat_filtering(
-                json_dir=str(json_dir),
-                stats_csv=str(stats_dir / "field_statistics.csv"),
-                output_dir=str(filter_dir),
-            )
-
-            # # 4.7) 캡션 생성
-            # logger.info("[7/7] 캡션 생성 및 LLM 필터링")
-            # process_captioning(
-            #     json_dir=json_dir,
-            #     data_dir=img_dir,
-            #     output_dir=output_dir,
-            #     model_name=config["captioning"]["model"],
-            #     prompts=config["captioning"]["prompt"],
+            # # 4.6) 통계 기반 필터링
+            # logger.info("[6/7] 통계 기반 필터링 시작")
+            # process_stat_filtering(
+            #     json_dir=str(json_dir),
+            #     stats_csv=str(stats_dir / "field_statistics.csv"),
+            #     output_dir=str(filter_dir),
             # )
+
+            # 4.7) 캡션 생성
+            logger.info("[7/7] 캡션 생성 및 LLM 필터링")
+            process_captioning(
+                json_dir=json_dir,
+                output_dir=output_dir,
+                model_name=config["captioning"]["model"],
+                prompt=config["captioning"]["prompt"],
+            )
 
             # # 4.8) LLM 필터링
             # process_llm_filtering(
@@ -110,6 +109,8 @@ def main():
             # )
 
             logger.info("파이프라인 실행 완료")
+
+            break
 
         except Exception as e:
             logger.error(f"파이프라인 실행 중 오류 발생: {e}", exc_info=True)

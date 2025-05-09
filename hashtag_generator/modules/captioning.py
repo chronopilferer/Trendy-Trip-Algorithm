@@ -34,23 +34,10 @@ def generate_caption(
         pixel_values=inputs["pixel_values"],
         max_new_tokens=64,
     )
-    text = processor.batch_decode(outputs, skip_special_tokens=True)[0]
-    if "<|assistant|>" in text:
+    raw_text = processor.batch_decode(outputs, skip_special_tokens=True)[0]
+    if "<|assistant|>" in raw_text:
         text = text.split("<|assistant|>")[-1].strip()
-    return text
-
-def parse_fine_caption(caption: str) -> Tuple[str, str, str]:
-    pattern = r"1\)\s*(.*?)\s*2\)\s*(.*?)\s*3\)\s*(.*)"
-
-    match = re.search(pattern, caption, re.DOTALL)
-    if match:
-        indoor_out = match.group(1).strip()
-        place = match.group(2).strip()
-        full_env = match.group(3).strip()
-    else:
-        indoor_out, place, full_env = None, None, None
-
-    return indoor_out, place, full_env
+    return raw_text, text
 
 def process_captioning(
     json_dir: str,
@@ -69,41 +56,25 @@ def process_captioning(
         if not fname.lower().endswith(".json"):
             continue
 
+        print(f'caption {fname}')
+
         json_path = os.path.join(json_dir, fname)
         rec = json.load(open(json_path, encoding="utf-8"))
-
-        if not rec.get('pass', False):
-            continue
 
         clip_decision = rec.get('clip_decision')
         if clip_decision is not None and clip_decision not in ("pass", "hold"):
             continue
 
-        img_path = rec.get("filepath")
+        img_path = rec.get("file_path")
         if not img_path or not os.path.isfile(img_path):
             print(f"[이미지 없음] {json_path}")
             continue
 
-        caption = generate_caption(img_path, processor, model, prompt, device)
-        indoor_out, place, full_env = parse_fine_caption(caption)
+        raw_caption, caption = generate_caption(img_path, processor, model, prompt, device)
 
         rec.update({
             "caption": caption,
-            "indoor_or_outdoor": indoor_out,
-            "place_type": place,
-            "full_environment_visible": full_env
+            "raw_caption": raw_caption
         })
 
-        fine_decision = "pass" if full_env and full_env.lower().startswith("yes") else "hold"
-        rec["fine_decision"] = fine_decision
-
-        rec["pass"] = True if fine_decision in ("pass", "hold") else False
-
         save_result(rec, json_path)
-
-        if fine_decision in ("pass", "hold"):
-            copy_image(img_path, output_dir, fine_decision)
-            print(f"[{fine_decision.upper()}] {fname}: {indoor_out}/{place}/{full_env}")
-        else:
-            print(f"[SKIP NON-PASS] {fname}")
-

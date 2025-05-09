@@ -34,12 +34,7 @@ ocr:
 captioning:
   model: "llava-hf/llava-1.5-7b-hf"
   prompt: >
-    Describe the place in the image.
-
-    Answer in this format:
-    Location type: (Indoor or Outdoor)
-    Key objects: (2-3 visible objects)
-    Scene: (One short sentence about the surroundings)
+    Describe the image.
 
     Do not imagine or guess.
 
