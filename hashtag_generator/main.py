@@ -99,7 +99,7 @@ def main():
             )
 
             # 4.7) 캡션 생성
-            logger.info("[7/7] 캡션 생성 및 LLM 필터링")
+            logger.info("[7/7] 캡션 생성 시작")
             process_captioning(
                 json_dir=str(json_dir),
                 processor=processor,
@@ -107,7 +107,7 @@ def main():
                 prompt=config["captioning"]["prompt"],
                 device=device,
             )
-            
+
             # # 4.8) LLM 필터링
             # process_llm_filtering(
             #     json_dir=json_dir,
