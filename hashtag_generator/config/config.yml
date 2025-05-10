@@ -33,8 +33,14 @@ ocr:
 
 captioning:
   model: "Salesforce/instructblip-vicuna-7b"
+  llava_model: "llava-hf/llava-1.5-7b-hf"
   prompt: >
-    Describe what is clearly visible in the image, such as objects, people, or scenes. Avoid making guesses or assumptions about the context.
+    Describe the overall scene in 1 to 3 short and clear sentences.
+    Only mention what is clearly visible in the image. Avoid any guesses.
+
+    Example: A group of people are hiking on a mountain trail.
+
+    Caption:
 
 LLM:
   model: "google/gemma-3-12b-it"
