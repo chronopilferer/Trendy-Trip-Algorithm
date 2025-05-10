@@ -55,11 +55,11 @@ def main():
         # 4) 파이프라인 단계 실행
         try:
             # 4.1) 이미지 메트릭 계산
-            logger.info("[1/7] 이미지 메트릭 계산 시작")
+            logger.info("[1/8] 이미지 메트릭 계산 시작")
             process_img_filtering(json_dir=json_dir, data_dir=img_dir)
 
             # 4.2) YOLO 객체 검출
-            logger.info("[2/7] YOLO 객체 검출 시작")
+            logger.info("[2/8] YOLO 객체 검출 시작")
             process_yolo_filtering(
                 json_dir=json_dir,
                 data_dir=img_dir,
@@ -67,11 +67,11 @@ def main():
             )
 
             # 4.3) OCR 메트릭 계산
-            logger.info("[3/7] OCR 메트릭 계산 시작")
+            logger.info("[3/8] OCR 메트릭 계산 시작")
             process_ocr_filtering(json_dir=json_dir, data_dir=img_dir)
 
             # 4.4) CLIP 점수 계산
-            logger.info("[4/7] CLIP 점수 계산 시작")
+            logger.info("[4/8] CLIP 점수 계산 시작")
             process_clip_filtering(
                 json_dir=json_dir,
                 data_dir=img_dir,
@@ -80,7 +80,7 @@ def main():
             )
 
             # 4.5) 통계량 계산
-            logger.info("[5/7] 통계량 계산 시작")
+            logger.info("[5/8] 통계량 계산 시작")
             stat_fields      = config.get("statistics", {}).get("fields")
             stat_percentiles = config.get("statistics", {}).get("percentiles")
             process_stat_compute(
@@ -91,7 +91,7 @@ def main():
             )
 
             # 4.6) 통계 기반 필터링
-            logger.info("[6/7] 통계 기반 필터링 시작")
+            logger.info("[6/8] 통계 기반 필터링 시작")
             process_stat_filtering(
                 json_dir=str(json_dir),
                 stats_csv=str(stats_dir / "field_statistics.csv"),
@@ -99,23 +99,30 @@ def main():
             )
 
             # 4.7) 캡션 생성
-            logger.info("[7/7] 캡션 생성 시작")
+            logger.info("[7/8] 캡션 생성 시작")
             process_captioning(
                 json_dir=str(json_dir),
                 processor=processor,
                 model=model,
                 prompt=config["captioning"]["prompt"],
                 device=device,
+                max_new_tokens=64
             )
 
-            # # 4.8) LLM 필터링
-            # process_llm_filtering(
-            #     json_dir=json_dir,
-            #     data_dir=img_dir,
-            #     output_dir=output_dir,
-            #     model_name=config["LLM"]["model"],
-            #     prompts=config["LLM"]["prompt"],
-            # )
+            # 4.8) LLM 필터링
+            logger.info("[8/8] LLM 필터링 시작")
+            process_llm_filtering(
+                json_dir=str(filter_dir),
+                output_dir=str(output_dir),
+                model_id=config["LLM"]["model"],
+                prompt_template=config["LLM"]["prompt_template"],
+                max_new_tokens=config["LLM"].get("max_new_tokens", 10),
+                temperature=config["LLM"].get("temperature", 0.2),
+                top_p=config["LLM"].get("top_p", 0.95),
+                load_in_4bit=config["LLM"].get("load_in_4bit", True),
+                device_map=config["LLM"].get("device_map", "auto"),
+                torch_dtype=torch.bfloat16,
+            )
 
             logger.info("파이프라인 실행 완료")
 

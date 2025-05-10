@@ -39,6 +39,7 @@ def process_judgement(
     temperature: float,
     top_p: float,
 ) -> tuple:
+    # 프롬프트에 캡션 삽입
     prompt = prompt_template.replace("{caption}", caption.strip())
     inputs = tokenizer(prompt, return_tensors="pt")
     inputs = {k: v.to(device) for k, v in inputs.items()}
@@ -55,7 +56,7 @@ def process_judgement(
 
     text = tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
     judgement = extract_judgement(text, prompt)
-    return judgement, text
+    return judgement.lower(), text.strip()
 
 def process_llm_filtering(
     json_dir: str,
@@ -67,7 +68,10 @@ def process_llm_filtering(
     top_p: float,
     load_in_4bit: bool = True,
     device_map: str = "auto",
-    torch_dtype: torch.dtype = torch.bfloat16
+    torch_dtype: torch.dtype = torch.bfloat16,
+    suitable_keywords: list = ["suitable"],
+    skip_if_judged: bool = True,
+    response_field_name: str = "LLM_response"
 ) -> None:
     tokenizer, model = load_filtering_model(
         model_id=model_id,
@@ -89,7 +93,11 @@ def process_llm_filtering(
         with open(path, 'r', encoding='utf-8') as f:
             rec = json.load(f)
 
+        # 이전 필터링에서 실패한 항목 무시
         if rec.get("pass") is False:
+            continue
+
+        if skip_if_judged and response_field_name in rec:
             continue
 
         caption = rec.get("caption", "")
@@ -113,13 +121,15 @@ def process_llm_filtering(
                 top_p=top_p,
             )
 
+            is_pass = any(keyword in judgement for keyword in suitable_keywords)
+
             rec.update({
                 "judgement": judgement,
-                "LLM_response": response,
-                "pass": (judgement == "pass")
+                response_field_name: response,
+                "pass": is_pass
             })
 
-            label = 'pass' if rec["pass"] else 'non-pass'
+            label = 'pass' if is_pass else 'non-pass'
             target_dir = os.path.join(output_dir, label)
             os.makedirs(target_dir, exist_ok=True)
 
