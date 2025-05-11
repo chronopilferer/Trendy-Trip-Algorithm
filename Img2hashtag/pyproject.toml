@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "img2hastag"
+version = "0.1.0"
+description = "A multi-stage pipeline for image filtering and hashtag generation"
+authors = [
+  { name = "Chrono Pilferer", email = "chronopilferer@gmail.com" }
+]
+dependencies = []
+
+[tool.setuptools]
+packages = ["img2hastag"]
+
+[tool.pytest.ini_options]
+pythonpath = "."

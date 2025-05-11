@@ -1,0 +1,19 @@
+{
+  "file_path": "data\\images_raw\\엠포모니카_2.jpg",
+  "brightness_score": 182.74514349489795,
+  "image_width": 560.0,
+  "image_height": 560.0,
+  "resolution_ratio": 1.8666666666666667,
+  "entropy_score": 7.422994136810303,
+  "person_area_ratio": 0.0,
+  "food_area_ratio": 0.19948979591836735,
+  "text_area_ratio": 0.0,
+  "num_text_boxes": 0.0,
+  "scene_max": 0.23857060074806213,
+  "scene_topk_avg": 0.20912276208400726,
+  "object_max": 0.2223886102437973,
+  "object_topk_avg": 0.21883128583431244,
+  "gap_max": 0.01618199050426483,
+  "gap_avg": -0.009708523750305176,
+  "file_name": "엠포모니카_2"
+}
