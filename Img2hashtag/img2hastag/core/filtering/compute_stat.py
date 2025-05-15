@@ -3,8 +3,8 @@ from pathlib import Path
 from typing import List, Optional
 import pandas as pd
 
-from Img2hashtag.img2hastag.utils.io import load_json_records
-from Img2hashtag.img2hastag.utils.constants import DEFAULT_PERCENTILES
+from img2hastag.utils.io import load_json_records
+from img2hastag.utils.constants import DEFAULT_PERCENTILES
 
 logger = logging.getLogger(__name__)
 

@@ -5,8 +5,8 @@ import numpy as np
 from ultralytics import YOLO
 from typing import List, Tuple, Dict
 
-from Img2hashtag.img2hastag.utils.constants import TARGET_LABELS, VALID_EXTENSIONS
-from Img2hashtag.img2hastag.utils.io import save_result, load_record
+from img2hastag.utils.constants import TARGET_LABELS, VALID_EXTENSIONS
+from img2hastag.utils.io import save_result, load_record
 
 logger = logging.getLogger(__name__)
 

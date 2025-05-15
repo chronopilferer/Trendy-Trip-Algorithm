@@ -201,3 +201,6 @@ file_structure.py
 hashtag_generator/data
 hashtag_generator/bk_data
 *.pt
+*.xlsx
+crawling/
+Imag2hashtag/data/

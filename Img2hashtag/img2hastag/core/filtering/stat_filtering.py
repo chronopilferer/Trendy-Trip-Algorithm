@@ -3,8 +3,8 @@ from pathlib import Path
 from typing import Dict, Any
 import pandas as pd
 
-from Img2hashtag.img2hastag.utils.io import load_json_records, load_record, save_result, copy_image
-from Img2hashtag.img2hastag.utils.constants import POLICY
+from img2hastag.utils.io import load_json_records, load_record, save_result, copy_image
+from img2hastag.utils.constants import POLICY
 
 logger = logging.getLogger(__name__)
 

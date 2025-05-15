@@ -6,7 +6,7 @@ from PIL import Image
 from transformers import InstructBlipProcessor, InstructBlipForConditionalGeneration, BitsAndBytesConfig
 from typing import Tuple
 
-from Img2hashtag.img2hastag.utils.io import save_result
+from img2hastag.utils.io import save_result
 
 logger = logging.getLogger(__name__)
 

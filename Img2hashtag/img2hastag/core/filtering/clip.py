@@ -7,8 +7,8 @@ import torch
 from PIL import Image
 from transformers import CLIPModel, CLIPProcessor
 
-from Img2hashtag.img2hastag.utils.constants import VALID_EXTENSIONS
-from Img2hashtag.img2hastag.utils.io import save_result, load_record
+from img2hastag.utils.constants import VALID_EXTENSIONS
+from img2hastag.utils.io import save_result, load_record
 
 logger = logging.getLogger(__name__)
 TOP_K = 3  

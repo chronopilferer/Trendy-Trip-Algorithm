@@ -4,8 +4,8 @@ import cv2
 import numpy as np
 from typing import Dict
 
-from Img2hashtag.img2hastag.utils.constants import MIN_WIDTH, MIN_HEIGHT, VALID_EXTENSIONS
-from Img2hashtag.img2hastag.utils.io import save_result, load_record
+from img2hastag.utils.constants import MIN_WIDTH, MIN_HEIGHT, VALID_EXTENSIONS
+from img2hastag.utils.io import save_result, load_record
 
 logger = logging.getLogger(__name__)
 

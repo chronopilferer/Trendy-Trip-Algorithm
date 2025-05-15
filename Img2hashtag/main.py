@@ -2,22 +2,22 @@ import logging
 from pathlib import Path
 import torch
 
-from Img2hashtag.img2hastag.utils.config import load_config
-from Img2hashtag.img2hastag.utils.io import ensure_dirs
-from Img2hashtag.img2hastag.utils.logging import setup_logging
+from img2hastag.utils.config import load_config
+from img2hastag.utils.io import ensure_dirs
+from img2hastag.utils.logging import setup_logging
 
-from Img2hashtag.img2hastag.core.filtering.captioning import load_img_to_text_model, process_captioning
-from Img2hashtag.img2hastag.core.filtering.yolo import process_yolo_filtering
-from Img2hashtag.img2hastag.core.filtering.ocr import process_ocr_filtering
-from Img2hashtag.img2hastag.core.filtering.clip import process_clip_filtering
-from Img2hashtag.img2hastag.core.filtering.compute_stat import process_stat_compute
-from Img2hashtag.img2hastag.core.filtering.stat_filtering import process_stat_filtering
-from Img2hashtag.img2hastag.core.filtering.image import process_img_filtering
-from Img2hashtag.img2hastag.core.filtering.llm import process_llm_filtering
+from img2hastag.core.filtering.captioning import load_img_to_text_model, process_captioning
+from img2hastag.core.filtering.yolo import process_yolo_filtering
+from img2hastag.core.filtering.ocr import process_ocr_filtering
+from img2hastag.core.filtering.clip import process_clip_filtering
+from img2hastag.core.filtering.compute_stat import process_stat_compute
+from img2hastag.core.filtering.stat_filtering import process_stat_filtering
+from img2hastag.core.filtering.image import process_img_filtering
+from img2hastag.core.filtering.llm import process_llm_filtering
 
 def main():
     # 1) 설정 불러오기
-    config = load_config("config")
+    config = load_config("img2hastag/config")
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     processor, model = load_img_to_text_model(

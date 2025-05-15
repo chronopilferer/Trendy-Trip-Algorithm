@@ -3,8 +3,8 @@ import torch
 from pathlib import Path
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
-from Img2hashtag.img2hastag.utils.io import save_result, copy_image
-from Img2hashtag.img2hastag.utils.text import extract_judgement
+from img2hastag.utils.io import save_result, copy_image
+from img2hastag.utils.text import extract_judgement
 
 def load_filtering_model(
     model_id: str,
