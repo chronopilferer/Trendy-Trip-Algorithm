@@ -52,22 +52,18 @@ captioning:
 LLM:
   model: "google/gemma-3-12b-it"
   prompt: >
-    Caption: "A close-up of a coffee cup."
-    Answer: Unsuitable
-
-    Caption: "A coffee cup on a wooden table in a cozy cafe."
-    Answer: Suitable
-
-    Caption: "{caption}"
-    Answer:
-
+    Does the caption describe the location in a way that not only makes it clear where the scene takes place, but also conveys an emotional or atmospheric impression—such as the mood, tone, or feeling of the environment?
+    The caption should provide enough sensory or descriptive details to evoke a mental image with both informational and emotional depth.
+    Caption: {caption}
+    Respond with one word only: Suitable or Unsuitable.
   suitable_keywords: ["suitable"]
   unsuitable_keywords: ["unsuitable"]
   skip_if_judged: true
-  max_new_tokens: 10
+  max_new_tokens: 64
   response_field_name: "LLM_response"
-  temperature: 0.2
+  temperature: 0.3
   top_p: 0.9
+  load_in_4bit: true
 
 caption_filtering:
   food_keywords:

@@ -70,6 +70,10 @@ def process_ocr_filtering(json_dir: Path, data_dir: Path) -> None:
             json_path = json_dir / f"{img_path.stem}.json"
             rec = load_record(json_path, defaults={})
 
+            if all(key in rec for key in ['text_area_ratio', 'num_text_boxes']):
+                logger.info(f"[스킵] OCR 메트릭 존재함: {json_path.name}")
+                continue
+
             metrics = process_single_ocr(img_path, reader)
             rec.update(metrics)
 
@@ -78,5 +82,3 @@ def process_ocr_filtering(json_dir: Path, data_dir: Path) -> None:
 
         except Exception as e:
             logger.error(f"Failed OCR processing {img_path.name}: {e}", exc_info=True)
-
-

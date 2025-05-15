@@ -55,6 +55,13 @@ def process_img_filtering(json_dir: Path, data_dir: Path, category: str) -> None
 
             rec = load_record(json_path, defaults={})
 
+            if all(key in rec for key in [
+                'brightness_score', 'entropy_score',
+                'image_width', 'image_height', 'resolution_ratio'
+            ]):
+                logger.info(f"[스킵] 이미지 메트릭 존재함: {json_path.name}")
+                continue
+
             rec.update({
                 'file_path': str(img_path),
                 'file_name': img_path.stem,
@@ -69,5 +76,3 @@ def process_img_filtering(json_dir: Path, data_dir: Path, category: str) -> None
 
         except Exception as e:
             logger.error(f"Failed processing {img_path.name}: {e}", exc_info=True)
-
-

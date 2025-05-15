@@ -123,6 +123,11 @@ def process_stat_filtering(
 
     for jp in json_dir.glob("*.json"):
         rec = load_record(jp, defaults={})
+        
+        if "flags" in rec and "pass" in rec:
+            logger.info(f"[스킵] 필터링 결과 존재함: {jp.name}")
+            continue
+
         fid = rec.get("file_name")
         if not fid or fid not in df_full.index:
             continue

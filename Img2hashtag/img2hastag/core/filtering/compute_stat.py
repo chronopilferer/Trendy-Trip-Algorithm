@@ -63,7 +63,6 @@ def compute_field_statistics(
     logger.info("통계량 계산 완료: %d개 필드", len(stat_df))
     return stat_df
 
-
 def process_stat_compute(
     json_dir: Path,
     output_dir: Path,
@@ -71,6 +70,13 @@ def process_stat_compute(
     percentiles: Optional[List[float]] = None,
     index_field: str = "file_name"
 ) -> None:
+    stat_csv = output_dir / "field_statistics.csv"
+    data_csv = output_dir / "all_data.csv"
+
+    if stat_csv.exists() and data_csv.exists():
+        logger.info(f"[스킵] 통계 CSV 이미 존재함: {stat_csv.name}, {data_csv.name}")
+        return
+
     try:
         records = load_json_records(json_dir)
     except Exception as e:
@@ -83,8 +89,6 @@ def process_stat_compute(
         return
 
     output_dir.mkdir(parents=True, exist_ok=True)
-    stat_csv = output_dir / "field_statistics.csv"
-    data_csv = output_dir / "all_data.csv"
 
     try:
         stat_df.to_csv(stat_csv, index=False)
@@ -92,3 +96,4 @@ def process_stat_compute(
         logger.info(f"CSV 저장 완료: {stat_csv}, {data_csv}")
     except Exception as e:
         logger.error(f"CSV 저장 실패: {e}")
+

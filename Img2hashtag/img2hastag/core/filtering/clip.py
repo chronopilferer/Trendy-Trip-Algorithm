@@ -87,6 +87,12 @@ def process_clip_filtering(
 
             rec = load_record(json_path, defaults={})
 
+            if all(key in rec for key in [
+                "scene_max", "scene_topk_avg", "object_max", "object_topk_avg", "gap_max", "gap_avg"
+            ]):
+                logger.info(f"[스킵] CLIP 결과 존재함: {json_path.name}")
+                continue
+
             metrics = classify_scene_object(img_path, prompts, processor, model, device)
             rec.update(metrics)
 

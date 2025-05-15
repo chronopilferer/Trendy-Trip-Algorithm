@@ -50,7 +50,7 @@ def process_judgement(
             temperature=temperature,
             top_p=top_p,
             early_stopping=True,
-            do_sample=False
+            do_sample=True
         )
 
     text = tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
@@ -81,9 +81,9 @@ def process_llm_filtering(
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
     json_path = Path(json_dir)
-    category = json_path.parent.name            
+    category = json_path.name
     base_output = Path(output_dir).parent       
-    final_base = base_output / "final" / category
+    final_base = base_output / category
 
     json_out    = final_base / "json"
     pass_dir    = final_base / "pass"
@@ -95,17 +95,18 @@ def process_llm_filtering(
     for json_file in json_path.glob("*.json"):
         rec = json.loads(json_file.read_text(encoding="utf-8"))
 
+        caption1 = rec.get("caption_instructblip", "").strip()
+        caption2 = rec.get("caption_llava", "").strip()
+        img_path = rec.get("file_path", "")
+        img_name = Path(img_path).name
+
         if rec.get("pass") is False:
+            copy_image(img_path, str(final_base), 'non-pass')
             continue
         if skip_if_judged and all(
             f"{response_field_name}_{i}" in rec for i in (1, 2)
         ):
             continue
-
-        caption1 = rec.get("caption_1", "").strip()
-        caption2 = rec.get("caption_2", "").strip()
-        img_path = rec.get("file_path", "")
-        img_name = Path(img_path).name
 
         if not caption1 or not caption2 or not Path(img_path).is_file():
             print(f"[⚠️ 스킵됨] {json_file.name} - 캡션 또는 이미지 누락")
@@ -146,7 +147,7 @@ def process_llm_filtering(
             print(f"[JSON 저장됨] {out_json}")
 
             dest_dir = final_base / pass_type
-            copy_image(img_path, str(dest_dir), img_name)
+            copy_image(img_path, str(final_base), pass_type)
             print(f"[이미지 저장됨] {img_name} → {dest_dir}\n")
 
         except torch.cuda.OutOfMemoryError as e:

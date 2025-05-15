@@ -1,10 +1,9 @@
 
-def extract_judgement(response: str, prompt: str) -> str:
-    response_clean = response.replace(prompt, '').strip().lower()
-
-    if "unsuitable" in response_clean:
-        return "non-pass"
-    elif "suitable" in response_clean:
-        return "pass"
+def extract_judgement(text: str, prompt: str) -> str:
+    answer = text.replace(prompt, "").strip().lower()
+    if "suitable" in answer:
+        return "suitable"
+    elif "unsuitable" in answer:
+        return "unsuitable"
     else:
-        return "unknown"
+        return answer  

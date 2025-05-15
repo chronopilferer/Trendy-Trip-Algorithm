@@ -10,7 +10,7 @@ from img2hastag.utils.io import save_result
 
 logger = logging.getLogger(__name__)
 
-def load_img_to_text_model(model_name: str, device: torch.device) -> Tuple[InstructBlipProcessor, InstructBlipForConditionalGeneration]:
+def load_instructBlip_model(model_name: str, device: torch.device) -> Tuple[InstructBlipProcessor, InstructBlipForConditionalGeneration]:
     try:
         quant_config = BitsAndBytesConfig(load_in_8bit=True)
 
@@ -80,6 +80,10 @@ def process_captioning(
                 rec = json.load(f)
         except Exception as e:
             logger.error(f"[JSON 로드 실패] {json_path}: {e}")
+            continue
+
+        if "caption_instructblip" in rec and rec["caption_instructblip"].strip():
+            logger.info(f"[스킵] 캡션 존재함: {fname}")
             continue
 
         img_path = rec.get("file_path", "")

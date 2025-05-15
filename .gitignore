@@ -203,4 +203,5 @@ hashtag_generator/bk_data
 *.pt
 *.xlsx
 crawling/
-Imag2hashtag/data/
+Img2hashtag/filtering/outputs/
+Img2hashtag/filtering/data/

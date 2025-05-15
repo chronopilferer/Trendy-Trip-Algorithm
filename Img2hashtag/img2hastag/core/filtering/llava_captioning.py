@@ -13,7 +13,7 @@ from img2hastag.utils.io import save_result
 
 logger = logging.getLogger(__name__)
 
-def load_img_to_text_model(
+def load_llava_model(
     model_name: str,
     device: torch.device
 ) -> Tuple[AutoProcessor, LlavaForConditionalGeneration]:
@@ -95,6 +95,9 @@ def process_captioning(
         img_path = rec.get("file_path", "")
         if not img_path or not os.path.isfile(img_path):
             logger.warning(f"[이미지 없음] {json_path}")
+            continue
+
+        if "caption_llava" in rec and rec["caption_llava"].strip():
             continue
 
         caption = ""

@@ -57,6 +57,10 @@ def process_yolo_filtering(
             json_path = json_dir / f"{img_path.stem}.json"
             rec = load_record(json_path, defaults={})
 
+            if all(key in rec for key in ['person_area_ratio', 'food_area_ratio']):
+                logger.info(f"[스킵] YOLO 메트릭 존재함: {json_path.name}")
+                continue
+
             img = cv2.imread(str(img_path))
             if img is None:
                 raise IOError(f"이미지 로드 실패: {img_path}")
