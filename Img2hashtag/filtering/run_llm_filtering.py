@@ -3,8 +3,8 @@ import yaml
 import torch
 from pathlib import Path
 
-from Img2hashtag.img2hastag.core.filtering.llm import process_llm_filtering
-from Img2hashtag.img2hastag.utils.logging import setup_logging
+from img2hastag.core.filtering.llm import process_llm_filtering
+from img2hastag.utils.logging import setup_logging
 
 def main(config_path: str = "configs/config.yml"):
     setup_logging()

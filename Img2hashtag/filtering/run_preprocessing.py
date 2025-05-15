@@ -3,14 +3,14 @@ import yaml
 import torch
 from pathlib import Path
 
-from Img2hashtag.img2hastag.core.filtering.image import process_img_filtering
-from Img2hashtag.img2hastag.core.filtering.yolo import process_yolo_filtering
-from Img2hashtag.img2hastag.core.filtering.ocr import process_ocr_filtering
-from Img2hashtag.img2hastag.core.filtering.clip import process_clip_filtering
-from Img2hashtag.img2hastag.core.filtering.compute_stat import process_stat_compute
-from Img2hashtag.img2hastag.core.filtering.stat_filtering import process_stat_filtering
+from img2hastag.core.filtering.image import process_img_filtering
+from img2hastag.core.filtering.yolo import process_yolo_filtering
+from img2hastag.core.filtering.ocr import process_ocr_filtering
+from img2hastag.core.filtering.clip import process_clip_filtering
+from img2hastag.core.filtering.compute_stat import process_stat_compute
+from img2hastag.core.filtering.stat_filtering import process_stat_filtering
 
-from Img2hashtag.img2hastag.utils.logging import setup_logging
+from img2hastag.utils.logging import setup_logging
 
 def main(config_path: str = "configs/config.yml"):
     setup_logging()
