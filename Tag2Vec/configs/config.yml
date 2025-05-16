@@ -1,0 +1,7 @@
+input_dir: "./data/json"       
+batch_size: 10                  
+device: "cuda"                  
+model_aliases:                  
+  - KoE5
+  - Snowflake
+  - KoSimCSE

@@ -1,0 +1,22 @@
+[
+  {
+    "file": "tc1.json",
+    "top_hashtag": "감성채광",
+    "similarity": 0.7487083673477173
+  },
+  {
+    "file": "tc4.json",
+    "top_hashtag": "감성채광",
+    "similarity": 0.7487083673477173
+  },
+  {
+    "file": "tc2.json",
+    "top_hashtag": "감성테라스",
+    "similarity": 0.6214042901992798
+  },
+  {
+    "file": "tc3.json",
+    "top_hashtag": "감성공간_기록",
+    "similarity": 0.5724250674247742
+  }
+]

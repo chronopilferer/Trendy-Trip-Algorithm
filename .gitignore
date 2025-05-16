@@ -205,3 +205,4 @@ hashtag_generator/bk_data
 crawling/
 Img2hashtag/filtering/outputs/
 Img2hashtag/filtering/data/
+Tag2Vec/data/

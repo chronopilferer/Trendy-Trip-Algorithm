@@ -1,0 +1,22 @@
+[
+  {
+    "file": "tc1.json",
+    "top_hashtag": "조용한카페추천",
+    "similarity": 0.7368264198303223
+  },
+  {
+    "file": "tc4.json",
+    "top_hashtag": "조용한카페추천",
+    "similarity": 0.7368264198303223
+  },
+  {
+    "file": "tc3.json",
+    "top_hashtag": "따뜻한_카페풍경",
+    "similarity": 0.7082479596138
+  },
+  {
+    "file": "tc2.json",
+    "top_hashtag": "커피향가득",
+    "similarity": 0.6377120018005371
+  }
+]

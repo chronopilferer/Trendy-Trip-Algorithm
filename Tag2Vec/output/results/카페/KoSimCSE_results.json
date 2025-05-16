@@ -1,0 +1,22 @@
+[
+  {
+    "file": "tc3.json",
+    "top_hashtag": "따뜻한_카페풍경",
+    "similarity": 0.6931036114692688
+  },
+  {
+    "file": "tc1.json",
+    "top_hashtag": "노을빛카페",
+    "similarity": 0.5742181539535522
+  },
+  {
+    "file": "tc2.json",
+    "top_hashtag": "노을빛카페",
+    "similarity": 0.5742181539535522
+  },
+  {
+    "file": "tc4.json",
+    "top_hashtag": "노을빛카페",
+    "similarity": 0.5742181539535522
+  }
+]
