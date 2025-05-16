@@ -60,7 +60,9 @@ def process_judgement(
 def process_llm_filtering(
     json_dir: str,
     output_dir: str,
-    model_id: str,
+    tokenizer,
+    model,
+    device: str,
     prompt_template: str,
     max_new_tokens: int,
     temperature: float,
@@ -72,12 +74,6 @@ def process_llm_filtering(
     skip_if_judged: bool = True,
     response_field_name: str = "LLM_response"
 ) -> None:
-    tokenizer, model = load_filtering_model(
-        model_id=model_id,
-        load_in_4bit=load_in_4bit,
-        device_map=device_map,
-        torch_dtype=torch_dtype
-    )
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
     json_path = Path(json_dir)
@@ -99,6 +95,15 @@ def process_llm_filtering(
         caption2 = rec.get("caption_llava", "").strip()
         img_path = rec.get("file_path", "")
         img_name = Path(img_path).name
+
+        if skip_if_judged and all(
+            key in rec for key in (
+                "judgement_1", "judgement_2",
+                "LLM_response_1", "LLM_response_2"
+            )
+        ):
+            print(f"[스킵됨] 판단 및 응답 모두 존재: {json_file.name}")
+            continue
 
         if rec.get("pass") is False:
             copy_image(img_path, str(final_base), 'non-pass')

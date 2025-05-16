@@ -17,15 +17,15 @@ def main(config_path: str = "configs/config.yml"):
     # 1) 전처리
     # preprocess_all(config_path)
 
-    # 2) BLIP 캡션
-    caption_blip(config_path)
-    gc.collect()
-    torch.cuda.empty_cache()
+    # # 2) BLIP 캡션
+    # caption_blip(config_path)
+    # gc.collect()
+    # torch.cuda.empty_cache()
 
-    # 3) LLaVA 캡션
-    caption_llava(config_path)
-    gc.collect()
-    torch.cuda.empty_cache()
+    # # 3) LLaVA 캡션
+    # caption_llava(config_path)
+    # gc.collect()
+    # torch.cuda.empty_cache()
 
     # 4) LLM 필터링
     llm_filter(config_path)
