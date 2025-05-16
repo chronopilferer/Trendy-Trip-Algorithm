@@ -89,7 +89,15 @@ def process_llm_filtering(
         d.mkdir(parents=True, exist_ok=True)
 
     for json_file in json_path.glob("*.json"):
-        rec = json.loads(json_file.read_text(encoding="utf-8"))
+        if json_file.stat().st_size == 0:
+            print(f"❌ [스킵됨] 파일이 비어 있음: {json_file.name}")
+            continue
+
+        try:
+            rec = json.loads(json_file.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as e:
+            print(f"❌ [스킵됨] JSON 파싱 실패: {json_file.name} - {e}")
+            continue
 
         caption1 = rec.get("caption_instructblip", "").strip()
         caption2 = rec.get("caption_llava", "").strip()
@@ -105,9 +113,17 @@ def process_llm_filtering(
             print(f"[스킵됨] 판단 및 응답 모두 존재: {json_file.name}")
             continue
 
+        out_json = json_out / json_file.name
+        if out_json.exists():
+            print(f"[스킵됨] 이미 존재하는 JSON 결과 파일: {out_json.name}")
+            continue
+
         if rec.get("pass") is False:
+            rec["pass_type"] = "non-pass"
+            save_result(rec, str(out_json))
             copy_image(img_path, str(final_base), 'non-pass')
             continue
+
         if skip_if_judged and all(
             f"{response_field_name}_{i}" in rec for i in (1, 2)
         ):
@@ -147,7 +163,6 @@ def process_llm_filtering(
                 pass_type = "non-pass"
             rec["pass_type"] = pass_type
 
-            out_json = json_out / json_file.name
             save_result(rec, str(out_json))
             print(f"[JSON 저장됨] {out_json}")
 

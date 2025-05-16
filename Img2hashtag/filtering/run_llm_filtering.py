@@ -19,7 +19,7 @@ def main(config_path: str = "configs/config.yml"):
         torch_dtype=getattr(torch, cfg['LLM'].get('torch_dtype', 'bfloat16'))
     )
 
-    for category in ["restaurant_img_dir", "attraction_img_dir"]:
+    for category in ["cafe_img_dir", "restaurant_img_dir", "attraction_img_dir"]:
         json_dir = Path(cfg['path']['json_dir']) / Path(cfg['path'][category]).stem
         output_dir = Path(cfg['path']['final_dir']) / Path(cfg['path'][category]).stem
         logger.info(f"[LLM Filter] {json_dir.stem}")
