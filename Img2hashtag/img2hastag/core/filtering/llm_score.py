@@ -1,11 +1,10 @@
 import json
 import torch
-from pathlib import Path
 import logging
+from pathlib import Path
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
-from img2hastag.utils.io import save_result, copy_image
-from img2hastag.utils.text import extract_judgement, clean_response
+from img2hastag.utils.io import save_result
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +14,7 @@ def load_filtering_model(
     device_map: str = "auto",
     torch_dtype: torch.dtype = torch.bfloat16
 ):
-    logging.info(f"[모델 로딩] {model_id}")
+    print(f"[모델 로딩] {model_id}")
     quant_config = BitsAndBytesConfig(
         load_in_4bit=load_in_4bit,
         bnb_4bit_compute_dtype=torch_dtype,
@@ -32,7 +31,9 @@ def load_filtering_model(
     )
     return tokenizer, model
 
-def process_judgement(
+import re
+
+def process_llm_score(
     caption: str,
     tokenizer,
     model,
@@ -41,9 +42,8 @@ def process_judgement(
     max_new_tokens: int,
     temperature: float,
     top_p: float,
-) -> tuple:
+) -> int:
     prompt = prompt_template.replace("{caption}", caption)
-    
     inputs = tokenizer(prompt, return_tensors="pt")
     inputs = {k: v.to(device) for k, v in inputs.items()}
 
@@ -53,17 +53,20 @@ def process_judgement(
             max_new_tokens=max_new_tokens,
             temperature=temperature,
             top_p=top_p,
-            early_stopping=True,  
-            num_beams=1,  
+            early_stopping=True,
             do_sample=True
         )
 
-    text = tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
-    cleaned_response = clean_response(text, prompt)
-    logging.info(f"Cleaned Response: {cleaned_response}")
-    judgement = extract_judgement(cleaned_response)
-    
-    return judgement.lower(), cleaned_response
+    score_response = tokenizer.decode(outputs[0], skip_special_tokens=True).strip()
+    logging.info(f'score_response: {score_response}')
+
+    # 숫자 추출 (정규식 기반)
+    match = re.search(r'\b([1-9]|10)\b', score_response)
+    if match:
+        return int(match.group(1))
+    else:
+        logging.warning(f"❗ 점수 파싱 실패, 기본값 0 반환: '{score_response}'")
+        return 0
 
 def process_llm_filtering(
     json_dir: str,
@@ -78,22 +81,20 @@ def process_llm_filtering(
     load_in_4bit: bool = True,
     device_map: str = "auto",
     torch_dtype: torch.dtype = torch.bfloat16,
-    suitable_keywords: list = ["suitable"],
     skip_if_judged: bool = True,
     response_field_name: str = "LLM_response"
 ) -> None:
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
     json_path = Path(json_dir)
-    category = json_path.name
-    base_output = Path(output_dir).parent
-    final_base = base_output / category
-
-    # 디렉토리 생성
-    json_out = final_base / "json"
-    pass_dir = final_base / "pass"
-    partial_dir = final_base / "partial-pass"
-    nonpass_dir = final_base / "non-pass"
+    output_path = Path(output_dir)
+    
+    # score 저장 위치
+    json_out = output_path
+    pass_dir = output_path.parent / "pass"
+    partial_dir = output_path.parent / "partial-pass"
+    nonpass_dir = output_path.parent / "non-pass"
+    
     for d in (json_out, pass_dir, partial_dir, nonpass_dir):
         d.mkdir(parents=True, exist_ok=True)
 
@@ -113,76 +114,47 @@ def process_llm_filtering(
         img_path = rec.get("file_path", "")
         img_name = Path(img_path).name
 
+        if rec.get("pass_type") != "pass":
+            logging.info(f"❌ [스킵됨] pass_type이 'pass'가 아님: {json_file.name}")
+            continue
+
+        # if "llm_score_1" in rec and "llm_score_2" in rec:
+        #     logging.info(f"❌ [스킵됨] 점수 이미 존재: {json_file.name}")
+        #     continue
+
         out_json = json_out / json_file.name
 
-        print(Path(img_path))
-
-        # 'pass'가 False인 경우 처리
-        if rec.get("pass") is False:
-            rec["final_pass"] = "non-pass"
-            save_result(rec, str(out_json))
-            copy_image(img_path, str(final_base), 'non-pass')
-            continue
-
-        if out_json.exists():
-            print(f"[스킵됨] 이미 존재하는 JSON 결과 파일: {out_json.name}")
-            continue
-
-        # 'skip_if_judged' 조건 처리
-        if skip_if_judged and all(
-            key in rec for key in (
-                "judgement_caption_instructblip", "judgement_caption_llava",
-                "LLM_response_caption_instructblip", "LLM_response_caption_llava"
-            )
-        ):
-            logging.info(f"[스킵됨] 판단 및 응답 모두 존재: {json_file.name}")
-            continue
-
-        # 캡션이나 이미지 누락된 경우
         if not caption1 or not caption2 or not Path(img_path).is_file():
             logging.info(f"[⚠️ 스킵됨] {json_file.name} - 캡션 또는 이미지 누락")
             continue
 
         logging.info(f"[처리 중] {json_file.name}")
         try:
-            # LLM 모델을 통한 판단 및 응답 생성
-            judgement1, response1 = process_judgement(
+            # LLM 점수 계산
+            score1 = process_llm_score(
                 caption1, tokenizer, model, device,
                 prompt_template, max_new_tokens, temperature, top_p
             )
-            judgement2, response2 = process_judgement(
+            score2 = process_llm_score(
                 caption2, tokenizer, model, device,
                 prompt_template, max_new_tokens, temperature, top_p
             )
 
-            # 판단 결과에 따라 'pass' 상태 설정
-            is_pass1 = "unsuitable" not in judgement1.lower()
-            is_pass2 = "unsuitable" not in judgement2.lower()
+            # JSON에 점수 추가
+            rec["llm_score_1"] = score1
+            rec["llm_score_2"] = score2
 
-            rec.update({
-                "judgement_caption_instructblip": judgement1,
-                f"{response_field_name}_caption_instructblip": response1,
-                "pass_caption_instructblip": is_pass1,
-                "judgement_caption_llava": judgement2,
-                f"{response_field_name}_caption_llava": response2,
-                "pass_caption_llava": is_pass2,
-            })
+            logging.info(f'score-1: {score1}')
+            logging.info(f'score-2: {score2}')
 
-            # 최종 pass 상태 설정
-            final_pass = "pass" if is_pass1 and is_pass2 else "partial-pass" if is_pass1 or is_pass2 else "non-pass"
-            rec["final_pass"] = final_pass
-
+            # JSON 파일 저장
             save_result(rec, str(out_json))
             logging.info(f"[JSON 저장됨] {out_json}")
 
-            dest_dir = final_base / final_pass
-            copy_image(img_path, str(final_base), final_pass)
-            logging.info(f"[이미지 저장됨] {img_name} → {dest_dir}\n")
+            exit()
 
         except torch.cuda.OutOfMemoryError as e:
-            logging.info(f"❌ [OOM 오류] {json_file.name} - {e}")
+            logging.error(f"❌ [OOM 오류] {json_file.name} - {e}")
             torch.cuda.empty_cache()
         except Exception as e:
-            logging.info(f"❌ [에러] {json_file.name} - {e}")
-
-        logging.info(f'')
+            logging.error(f"❌ [에러] {json_file.name} - {e}")

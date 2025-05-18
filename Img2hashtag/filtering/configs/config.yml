@@ -52,16 +52,25 @@ captioning:
 LLM:
   model: "google/gemma-3-12b-it"
   prompt: >
-    Does the caption describe the location in a way that not only makes it clear where the scene takes place, but also conveys an emotional or atmospheric impression—such as the mood, tone, or feeling of the environment?
-    The caption should provide enough sensory or descriptive details to evoke a mental image with both informational and emotional depth.
+    Evaluate the following caption:
     Caption: {caption}
-    Respond with one word only: Suitable or Unsuitable.
+    Return "Suitable" if the caption clearly describes the location or setting, and includes some context, emotional tone, or atmosphere. A caption that only describes the location in a very basic or mechanical way without additional context should be considered "Unsuitable."
+  prompt_score: >
+    How well does the caption describe the place and its mood?
+
+    Score it from 1 to 10:
+    - 1-3: Poor - Not clear or descriptive.
+    - 4-6: Fair - Somewhat descriptive, limited mood or detail.
+    - 7-10: Good - Clear, vivid, and emotionally expressive.
+
+    Caption: {caption}
+    Respond with one number only.
   suitable_keywords: ["suitable"]
   unsuitable_keywords: ["unsuitable"]
   skip_if_judged: true
   max_new_tokens: 64
   response_field_name: "LLM_response"
-  temperature: 0.3
+  temperature: 0.2
   top_p: 0.9
   load_in_4bit: true
 

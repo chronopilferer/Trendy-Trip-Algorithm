@@ -8,6 +8,7 @@ from run_preprocessing import main as preprocess_all
 from run_caption_blip import main as caption_blip
 from run_caption_llava import main as caption_llava
 from run_llm_filtering import main as llm_filter
+from run_score import main as llm_score
 
 def main(config_path: str = "configs/config.yml"):
     setup_logging()
@@ -31,6 +32,11 @@ def main(config_path: str = "configs/config.yml"):
     llm_filter(config_path)
     gc.collect()
     torch.cuda.empty_cache()
+
+    # # 5) LLM 점수 계산
+    # llm_score(config_path)
+    # gc.collect()
+    # torch.cuda.empty_cache()
 
     logger.info("==== 전체 파이프라인 완료 ====")
 
